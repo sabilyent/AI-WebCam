@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="ms">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI-WebCam | Sistem Penglihatan Komputer untuk Sekolah & Penyelidikan</title>
+  <meta name="description"
+    content="Platform webcam berkuasa AI untuk mengecam nombor plat kenderaan, wajah, dan teks. Sesuai untuk projek inovasi sekolah dan penyelidikan sains komputer.">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- ======================================================
+       NAVIGATION
+       ====================================================== -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="#hero" class="brand-logo">
+        <div class="logo-icon-wrap">📷</div>
+        <div class="logo-texts">
+          <span class="brand-title">AI-WebCam</span>
+          <span class="brand-sub">Edtech &amp; Penyelidikan</span>
+        </div>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#simulator" class="nav-link">Simulator Interaktif</a>
+        <a href="#how-it-works" class="nav-link">Cara Berfungsi</a>
+        <a href="#database-lab" class="nav-link">Makmal SQLite3</a>
+        <a href="#school-projects" class="nav-link">Projek Sekolah</a>
+        <a href="#quick-start" class="btn btn-primary nav-cta">Mula Projek</a>
+      </nav>
+
+      <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Buka Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+
+  <!-- ======================================================
+       HERO
+       ====================================================== -->
+  <section id="hero" class="hero-section">
+    <div class="container hero-grid">
+
+      <!-- Left: Copy -->
+      <div class="hero-content">
+        <div class="hero-label">
+          <span>✅</span>
+          <span>Sumber Terbuka · Python · SQLite3 · Sesuai Untuk Pelajar &amp; Guru</span>
+        </div>
+
+        <h1 class="hero-title">
+          Kamera Web Biasa Anda Boleh Menjadi
+          <span class="accent-text">Sistem Penglihatan AI Yang Canggih</span>
+        </h1>
+
+        <p class="hero-desc">
+          Platform penyelidikan modular menggunakan <strong>Python</strong> dan <strong>SQLite3</strong> yang
+          membenarkan anda menggunakan kunci AI API sendiri (Google Gemini, OpenAI atau lain-lain) untuk mengecam
+          <strong>nombor plat kenderaan</strong>, <strong>wajah individu</strong>, <strong>teks &amp; huruf
+            (OCR)</strong>, dan pelbagai analisis visual lain.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#simulator" class="btn btn-primary">
+            <span>▶</span>
+            <span>Cuba Simulator Interaktif</span>
+          </a>
+          <a href="#how-it-works" class="btn btn-secondary">
+            <span>Bagaimana Ia Berfungsi?</span>
+          </a>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-number">4</div>
+            <div class="stat-label">Mod Tugasan AI</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">100%</div>
+            <div class="stat-label">Data Tersimpan Tempatan</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">BYOK</div>
+            <div class="stat-label">Kunci API Sendiri</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">5</div>
+            <div class="stat-label">Idea Projek Sekolah</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Product Preview -->
+      <div class="hero-preview-card">
+        <div class="preview-topbar">
+          <div class="preview-dots">
+            <span class="preview-dot dot-r"></span>
+            <span class="preview-dot dot-y"></span>
+            <span class="preview-dot dot-g"></span>
+          </div>
+          <div class="preview-urlbar">AI-WebCam &mdash; Suapan Video Langsung</div>
+          <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.7rem;color:#15803d;font-weight:700;">
+            <span class="preview-status-dot"></span>
+            LANGSUNG
+          </div>
+        </div>
+
+        <div class="preview-viewport">
+          <div class="preview-scan-indicator"></div>
+
+          <!-- Car Scene -->
+          <div class="preview-car-scene">
+            <div class="preview-car-body">
+              <div class="preview-car-roof"></div>
+              <div class="preview-car-lights">
+                <div class="preview-light"></div>
+                <div class="preview-light"></div>
+              </div>
+              <div class="preview-plate">
+                WXY 8899
+                <div class="preview-plate-bbox">
+                  <span class="preview-plate-tag">Plat Dikesan &bull; 99.2%</span>
+                </div>
+              </div>
+            </div>
+            <div class="preview-car-wheels">
+              <div class="preview-wheel"></div>
+              <div class="preview-wheel"></div>
+            </div>
+          </div>
+
+          <!-- Detection Bubble -->
+          <div class="preview-result-bubble">
+            <div class="bubble-result-label">✅ Padanan Ditemui dalam SQLite3</div>
+            <div class="bubble-result-value">WXY 8899 → Cikgu Sarah (Guru Kelas 4)</div>
+            <div class="bubble-result-sub">Tindakan: Palang Automatik Dibuka &bull; Log Disimpan</div>
+          </div>
+        </div>
+
+        <div class="preview-footer">
+          <div class="preview-metric">
+            <span class="preview-metric-value">30 FPS</span>
+            <span class="preview-metric-label">Suapan Video</span>
+          </div>
+          <div class="preview-metric">
+            <span class="preview-metric-value">45 ms</span>
+            <span class="preview-metric-label">Kependaman AI</span>
+          </div>
+          <div class="preview-metric">
+            <span class="preview-metric-value">99.2%</span>
+            <span class="preview-metric-label">Keyakinan</span>
+          </div>
+          <div class="preview-metric">
+            <span class="preview-metric-value">SQLite3</span>
+            <span class="preview-metric-label">Pangkalan Data</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ======================================================
+       FEATURES STRIP
+       ====================================================== -->
+  <div class="features-strip">
+    <div class="container">
+      <div class="features-strip-grid">
+        <div class="strip-feature">
+          <div class="strip-icon">🔑</div>
+          <span>Kunci API Milik Sendiri (BYOK)</span>
+        </div>
+        <div class="strip-feature">
+          <div class="strip-icon">🛡️</div>
+          <span>Data 100% Tersimpan Tempatan</span>
+        </div>
+        <div class="strip-feature">
+          <div class="strip-icon">📦</div>
+          <span>Pangkalan Data SQLite3 Mudah</span>
+        </div>
+        <div class="strip-feature">
+          <div class="strip-icon">🐍</div>
+          <span>Python 3.10+ Sepenuhnya</span>
+        </div>
+        <div class="strip-feature">
+          <div class="strip-icon">🎒</div>
+          <span>Sesuai Untuk Projek STEM Sekolah</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ======================================================
+       SIMULATOR SECTION
+       ====================================================== -->
+  <section id="simulator" class="simulator-section">
+    <div class="container">
+      <div class="text-center">
+        <span class="section-label">Cuba Sendiri Sekarang</span>
+        <h2 class="section-title">Simulator Penglihatan AI Interaktif</h2>
+        <p class="section-subtitle">Pilih mod tugasan, tekan "Imbas Sekarang", dan lihat bagaimana sistem AI membaca
+          maklumat, menyemak pangkalan data SQLite3, dan mengambil tindakan automatik.</p>
+      </div>
+
+      <!-- Mode Selector -->
+      <div class="mode-tabs-wrapper" role="tablist">
+        <button class="mode-tab active" data-mode="plate" role="tab">
+          <span class="tab-icon">🚗</span>
+          <div class="tab-info">
+            <span class="tab-name">Nombor Plat</span>
+            <span class="tab-desc">Pengecaman ANPR</span>
+          </div>
+        </button>
+        <button class="mode-tab" data-mode="face" role="tab">
+          <span class="tab-icon">👤</span>
+          <div class="tab-info">
+            <span class="tab-name">Pengecaman Wajah</span>
+            <span class="tab-desc">Kehadiran Automatik</span>
+          </div>
+        </button>
+        <button class="mode-tab" data-mode="ocr" role="tab">
+          <span class="tab-icon">📖</span>
+          <div class="tab-info">
+            <span class="tab-name">Pengecaman Huruf</span>
+            <span class="tab-desc">OCR Vision AI</span>
+          </div>
+        </button>
+        <button class="mode-tab" data-mode="scene" role="tab">
+          <span class="tab-icon">🧠</span>
+          <div class="tab-info">
+            <span class="tab-name">Analisis Situasi</span>
+            <span class="tab-desc">Pemahaman Visual AI</span>
+          </div>
+        </button>
+      </div>
+
+      <!-- Workbench -->
+      <div class="simulator-workbench">
+
+        <!-- Left: Camera Panel -->
+        <div class="camera-panel">
+          <div class="camera-panel-topbar">
+            <div class="cam-live-indicator">
+              <span class="cam-status-dot"></span>
+              <span id="camera-status-text">KAMERA AKTIF &mdash; SIMULASI 1080P</span>
+            </div>
+            <div class="cam-controls">
+              <button id="sound-toggle-btn" class="cam-icon-btn" title="Pasang / Matikan Bunyi">
+                <span id="sound-icon">🔊</span>
+              </button>
+              <button id="real-webcam-btn" class="cam-main-btn">📷 Cuba Kamera Saya</button>
+            </div>
+          </div>
+
+          <!-- Viewport -->
+          <div class="camera-viewport" id="screen-container">
+            <!-- HUD Corners -->
+            <div class="vp-corner vp-corner-tl"></div>
+            <div class="vp-corner vp-corner-tr"></div>
+            <div class="vp-corner vp-corner-bl"></div>
+            <div class="vp-corner vp-corner-br"></div>
+
+            <!-- Laser Line -->
+            <div class="laser-scanner-line" id="laser-line"></div>
+
+            <!-- Simulation Display Area -->
+            <div class="simulation-display" id="sim-display"></div>
+
+            <!-- Real Camera (Hidden by default) -->
+            <video id="real-video-feed" autoplay playsinline muted class="real-video-feed hidden"></video>
+            <canvas id="real-canvas-overlay" class="real-canvas-overlay hidden"></canvas>
+
+            <!-- HUD Bottom Bar -->
+            <div class="vp-hud-bar">
+              <span id="hud-fps">FPS: 30</span>
+              <span id="hud-resolution">1920 × 1080</span>
+              <span id="hud-mode-display">MOD: NOMBOR PLAT KENDERAAN</span>
+            </div>
+          </div>
+
+          <!-- Action Toolbar -->
+          <div class="camera-actions">
+            <button id="trigger-scan-btn" class="btn-scan">
+              <span>⚡</span>
+              <span>Imbas Objek Sekarang</span>
+            </button>
+            <button id="next-sample-btn" class="btn-next-sample">
+              Contoh Seterusnya →
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Analysis Panel -->
+        <div class="analysis-panel">
+          <div class="analysis-panel-header">
+            <h3>Keputusan Analisis</h3>
+            <span class="provider-tag" id="api-provider-badge">Gemini Vision AI</span>
+          </div>
+
+          <!-- Result Status -->
+          <div class="result-card" id="result-banner">
+            <div class="result-card-icon" id="result-icon-box">⏳</div>
+            <div class="result-card-body">
+              <h4 id="result-title">Sedia Untuk Diimbas</h4>
+              <p id="result-subtitle">Tekan butang "Imbas Objek Sekarang" untuk memulakan analisis.</p>
+            </div>
+          </div>
+
+          <!-- Pipeline Tracker -->
+          <div class="pipeline-section">
+            <span class="pipeline-title">Aliran Pemprosesan Data:</span>
+            <div class="pipeline-steps">
+              <div class="pipeline-step" id="step-cam">
+                <div class="step-num">1</div>
+                <span class="step-lbl">Kamera</span>
+              </div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-step" id="step-ai">
+                <div class="step-num">2</div>
+                <span class="step-lbl">AI Vision</span>
+              </div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-step" id="step-db">
+                <div class="step-num">3</div>
+                <span class="step-lbl">SQLite3</span>
+              </div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-step" id="step-action">
+                <div class="step-num">4</div>
+                <span class="step-lbl">Tindakan</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Detection Detail Table -->
+          <div class="detection-details">
+            <div class="detail-row">
+              <span class="detail-label">Nilai Dikesan</span>
+              <span class="detail-value accent" id="info-value">—</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Keyakinan AI</span>
+              <div class="confidence-wrapper">
+                <div class="confidence-track">
+                  <div class="confidence-fill" id="confidence-bar" style="width:0%"></div>
+                </div>
+                <span class="detail-value" id="confidence-text">0%</span>
+              </div>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Padanan SQLite3</span>
+              <span class="detail-value" id="info-match">—</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Tindakan Sistem</span>
+              <span class="detail-value success" id="info-action">—</span>
+            </div>
+          </div>
+
+          <!-- JSON Inspector -->
+          <div class="json-inspector">
+            <div class="json-inspector-header">
+              <span>Respons JSON daripada AI API</span>
+              <button id="copy-json-btn" class="copy-json-btn">Salin</button>
+            </div>
+            <pre class="json-code" id="json-code">{
+  "status": "ready",
+  "task": "license_plate",
+  "waiting_for_scan": true
+}</pre>
+          </div>
+
+        </div><!-- /analysis-panel -->
+      </div><!-- /simulator-workbench -->
+    </div>
+  </section>
+
+
+  <!-- ======================================================
+       HOW IT WORKS
+       ====================================================== -->
+  <section id="how-it-works" class="how-section">
+    <div class="container">
+      <div class="text-center">
+        <span class="section-label">Konsep Mudah (4 Langkah)</span>
+        <h2 class="section-title">Bagaimana Sistem Ini Berfungsi?</h2>
+        <p class="section-subtitle">
+          Bayangkan sistem ini seperti seorang pengawal sekolah yang mempunyai mata yang sangat tajam dan sebuah buku
+          daftar murid yang lengkap!
+        </p>
+      </div>
+
+      <div class="steps-row">
+        <!-- Step 1 -->
+        <div class="step-card">
+          <span class="step-badge">Langkah 1</span>
+          <div class="step-icon-wrap">📷</div>
+          <h3>Mata Kamera (Webcam)</h3>
+          <p>Kamera menangkap gambar secara berterusan (30 bingkai sesaat) menggunakan perpustakaan <code>OpenCV</code>
+            dalam Python.</p>
+          <div class="step-analogy">💡 Ibarat mata pengawal yang memerhati kereta lalu lalang di pintu pagar.</div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-card">
+          <span class="step-badge">Langkah 2</span>
+          <div class="step-icon-wrap">🧠</div>
+          <h3>Otak AI (Kunci API)</h3>
+          <p>Gambar dihantar ke model AI Vision (Gemini atau OpenAI) menggunakan kunci API peribadi anda untuk membaca
+            nombor plat atau mengenali wajah.</p>
+          <div class="step-analogy">💡 Ibarat otak pakar yang boleh membaca teks kecil dan mengenali wajah sekelip mata.
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-card">
+          <span class="step-badge">Langkah 3</span>
+          <div class="step-icon-wrap">📚</div>
+          <h3>Buku Daftar (SQLite3)</h3>
+          <p>Komputer menyemak pangkalan data: <em>"Adakah kereta ini kepunyaan guru bertugas?"</em> atau <em>"Adakah
+              murid ini dalam kelas 5 Arif?"</em></p>
+          <div class="step-analogy">💡 Ibarat buku pendaftaran sekolah yang tersusun rapi dalam kabinet fail.</div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step-card">
+          <span class="step-badge">Langkah 4</span>
+          <div class="step-icon-wrap">✅</div>
+          <h3>Tindakan Automatik</h3>
+          <p>Jika padanan dijumpai, sistem mencatat rekod kehadiran, membuka palang automatik, menghantar notis, atau
+            menyimpan tangkapan gambar ke log.</p>
+          <div class="step-analogy">💡 Ibarat pengawal memberi salam dan menekan butang buka pagar!</div>
+        </div>
+      </div>
+
+      <!-- Why SQLite & BYOK -->
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-card-icon">🔑</div>
+          <div class="why-card-body">
+            <h4>Mengapa Konsep BYOK (Bring Your Own Key)?</h4>
+            <p>Setiap penyelidik atau pelajar memiliki kunci AI API sendiri. Tiada yuran langganan pihak ketiga, tiada
+              perkongsian data, dan anda mempunyai kawalan penuh ke atas had penggunaan API anda.</p>
+          </div>
+        </div>
+        <div class="why-card">
+          <div class="why-card-icon">⚡</div>
+          <div class="why-card-body">
+            <h4>Mengapa Pangkalan Data SQLite3?</h4>
+            <p>SQLite3 hanya berupa satu fail kecil (<code>ai_webcam.db</code>). Sangat laju, tidak memerlukan
+              pemasangan pelayan rumit, berfungsi tanpa sambungan internet, dan mudah untuk dibawa dan dikongsi sebagai
+              fail biasa.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ======================================================
+       SQLite3 LAB SECTION
+       ====================================================== -->
+  <section id="database-lab" class="lab-section">
+    <div class="container">
+      <div class="text-center">
+        <span class="section-label">Makmal Pangkalan Data</span>
+        <h2 class="section-title">Uji Kaji Interaktif SQLite3</h2>
+        <p class="section-subtitle">
+          Tambah nombor plat kenderaan baharu atau daftarkan murid baru ke dalam pangkalan data, kemudian kembali ke
+          simulator di atas untuk mengimbasnya!
+        </p>
+      </div>
+
+      <div class="db-lab-card">
+        <!-- DB Tab Nav -->
+        <div class="db-tab-nav" role="tablist">
+          <button class="db-tab-btn active" data-dbtab="plates" role="tab">🚗 vehicle_watchlist</button>
+          <button class="db-tab-btn" data-dbtab="faces" role="tab">👤 face_dataset</button>
+          <button class="db-tab-btn" data-dbtab="logs" role="tab">📋 detection_logs</button>
+        </div>
+
+        <!-- Panel: Plates -->
+        <div class="db-panel active" id="db-panel-plates">
+          <div class="db-panel-header">
+            <div class="db-panel-header-text">
+              <h3>Senarai Kenderaan Berdaftar</h3>
+              <p>Nombor plat yang dibenarkan atau dilarang masuk ke kawasan premis.</p>
+            </div>
+            <button id="add-plate-modal-btn" class="btn btn-outline btn-sm">+ Tambah Plat Baharu</button>
+          </div>
+          <div class="table-responsive">
+            <table class="sqlite-table" id="plates-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombor Plat</th>
+                  <th>Nama Pemilik</th>
+                  <th>Kategori</th>
+                  <th>Status</th>
+                  <th>Tindakan</th>
+                </tr>
+              </thead>
+              <tbody id="plates-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Panel: Faces -->
+        <div class="db-panel" id="db-panel-faces">
+          <div class="db-panel-header">
+            <div class="db-panel-header-text">
+              <h3>Set Data Wajah Rujukan</h3>
+              <p>Gambar dan maklumat murid, guru, dan pengawas untuk sistem kehadiran automatik.</p>
+            </div>
+            <button id="add-face-modal-btn" class="btn btn-outline btn-sm">+ Daftar Murid Baharu</button>
+          </div>
+          <div class="table-responsive">
+            <table class="sqlite-table" id="faces-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Avatar</th>
+                  <th>Nama Penuh</th>
+                  <th>Kelas / Jawatan</th>
+                  <th>Kategori</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="faces-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Panel: Logs -->
+        <div class="db-panel" id="db-panel-logs">
+          <div class="db-panel-header">
+            <div class="db-panel-header-text">
+              <h3>Log Pengesanan Sistem</h3>
+              <p>Setiap imbasan dalam simulator direkodkan secara automatik di sini sebagai simulasi log SQLite3.</p>
+            </div>
+            <button id="clear-logs-btn" class="btn btn-ghost btn-sm">Kosongkan Log</button>
+          </div>
+          <div class="table-responsive">
+            <table class="sqlite-table" id="logs-table">
+              <thead>
+                <tr>
+                  <th>Log ID</th>
+                  <th>Masa &amp; Tarikh</th>
+                  <th>Mod Tugasan</th>
+                  <th>Nilai Dikesan</th>
+                  <th>Keyakinan AI</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="logs-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- /db-lab-card -->
+    </div>
+  </section>
+
+
+  <!-- ======================================================
+       SCHOOL PROJECTS SECTION
+       ====================================================== -->
+  <section id="school-projects" class="projects-section">
+    <div class="container">
+      <div class="text-center">
+        <span class="section-label">Inovasi Sekolah &amp; Pertandingan STEM</span>
+        <h2 class="section-title">6 Idea Projek Sekolah Menggunakan Sistem Ini</h2>
+        <p class="section-subtitle">
+          Sesuai untuk pameran sains, pertandingan inovasi STEM, atau kerja kursus RBT dan Sains Komputer!
+        </p>
+      </div>
+
+      <div class="projects-grid">
+
+        <!-- Project 1 -->
+        <div class="project-card">
+          <div class="project-card-top">
+            <span class="badge badge-success project-tag">Trafik &amp; Keselamatan</span>
+            <span class="project-icon">🚧</span>
+          </div>
+          <h3>1. Palang Pintu Automatik untuk Kereta Guru</h3>
+          <p>Webcam di pondok pengawal membaca nombor plat kereta guru. Jika plat disenaraikan dalam SQLite3, motor
+            servo Arduino membuka palang secara automatik tanpa kehadiran pengawal fizikal.</p>
+          <ul class="project-specs">
+            <li><strong>Mod AI:</strong> Nombor Plat (ANPR)</li>
+            <li><strong>Perkakasan:</strong> Arduino / Raspberry Pi (Pilihan)</li>
+            <li><strong>Tahap:</strong> Menengah Rendah &amp; Atas</li>
+          </ul>
+          <div class="ai-model-block">
+            <div class="ai-model-row">
+              <span class="ai-provider-badge cloud">☁️ Cloud API</span>
+              <span class="ai-model-name">Google Gemini 2.0 Flash</span>
+            </div>
+            <div class="ai-model-row">
+              <span class="ai-provider-badge cloud alt">☁️ Alternatif</span>
+              <span class="ai-model-name">GPT-4o mini (OpenAI)</span>
+            </div>
+            <div class="ai-model-row">
+              <span class="ai-provider-badge local">🖥️ Lokal &lt;8GB RTX</span>
+              <span class="ai-model-name">LLaVA 1.6 7B <em>(via Ollama)</em></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="project-card">
+          <div class="project-card-top">
+            <span class="badge badge-blue project-tag">Pengurusan Sekolah</span>
+            <span class="project-icon">🏫</span>
+          </div>
+          <h3>2. Sistem Kehadiran Murid Tanpa Sentuhan</h3>
+          <p>Murid berjalan melepasi kamera di pintu kelas. Sistem mengenal wajah, menanda kehadiran dalam SQLite3, dan
+            menghantar notifikasi kepada ibu bapa &mdash; semua dalam masa bawah 2 saat.</p>
+          <ul class="project-specs">
+            <li><strong>Mod AI:</strong> Pengecaman Wajah (Face ID)</li>
+            <li><strong>Perkakasan:</strong> Webcam Makmal Komputer</li>
+            <li><strong>Tahap:</strong> Sekolah Rendah &amp; Menengah</li>
+          </ul>
+          <div class="ai-model-block">
+            <div class="ai-model-row">
+              <span class="ai-provider-badge cloud">☁️ Cloud API</span>
+              <span class="ai-model-name">Google Gemini 2.0 Flash (Vision)</span>
+            </div>
+            <div class="ai-model-row">
+              <span class="ai-provider-badge cloud alt">🔧 Lib Khusus</span>
+              <span class="ai-model-name">face_recognition + DeepFace</span>
+            </div>
+            <div class="ai-model-row">
+              <span class="ai-provider-badge local">🖥️ Lokal &lt;8GB RTX</span>
+              <span class="ai-model-name">InsightFace ArcFace R50 <em>(ONNX)</em></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 3 -->
+        <div class="project-card">
+          <div class="project-card-top">
+            <span class="badge badge-purple project-tag">Pendidikan Khas</span>
+            <span class="project-icon">📖</span>
+          </div>
+          <h3>3. Pembaca Teks Bersuara untuk Rakan OKU Penglihatan</h3>
+          <p>Rakan meletakkan buku atau kad imbasan di bawah webcam. AI membaca semua teks melalui OCR dan membacakannya
+            secara lantang menggunakan Text-to-Speech &mdash; membantu rakan yang mempunyai masalah penglihatan.</p>
+          <ul class="project-specs">
+            <li><strong>Mod AI:</strong> Pengecaman Huruf (OCR Vision)</li>
+            <li><strong>Perkakasan:</strong> Speaker / Fon Telinga</li>
+            <li><strong>Tahap:</strong> Semua Peringkat Umur</li>
+          </ul>
+          <div class="ai-model-block">
+            <div class="ai-model-row">
+              <span class="ai-provider-badge cloud">☁️ Cloud API</span>
+              <span class="ai-model-name">Google Gemini 2.0 Flash (Vision)</span>
+            </div>
+            <div class="ai-model-row">
+              <span class="ai-provider-badge cloud alt">☁️ Alternatif</span>
+              <span class="ai-model-name">GPT-4o (OpenAI Vision)</span>
+            </div>
+            <div class="ai-model-row">
+              <span class="ai-provider-badge local">🖥️ Lokal &lt;8GB RTX</span>
+              <span class="ai-model-name">Tesseract OCR 5 + PaddleOCR <em>(CPU/GPU)</em></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 4 -->
+        <div class="project-card">
+          <div class="project-card-top">
+            <span class="badge badge-success project-tag">Kelestarian Alam</span>
+            <span class="project-icon">♻️</span>
+          </div>
+          <h3>4. Tong Kitar Semula Pintar Sekolah</h3>
+          <p>Murid menunjukkan sampah ke hadapan webcam. AI mengenal pasti jenis bahan (plastik, aluminium, kertas) dan
+            menghidupkan lampu LED penunjuk tong yang betul secara automatik.</p>
+          <ul class="project-specs">
+            <li><strong>Mod AI:</strong> Penganalisis Objek (Scene AI)</li>
+            <li><strong>Perkakasan:</strong> LED &amp; Tong Berlabel Warna</li>
+            <li><strong>Tahap:</strong> Kelab Alam Sekitar &amp; STEM</li>
+          </ul>
+          <div class="ai-model-block">
+            <div class="ai-model-row">
+              <span class="ai-provider-badge cloud">☁️ Cloud API</span>
+              <span class="ai-model-name">Google Gemini 2.0 Flash (Vision)</span>
+            </div>
+            <div class="ai-model-row">
+              <span class="ai-provider-badge cloud alt">☁️ Alternatif</span>
+              <span class="ai-model-name">Claude 3.5 Haiku (Anthropic)</span>
+            </div>
+            <div class="ai-model-row">
+              <span class="ai-provider-badge local">🖥️ Lokal &lt;8GB RTX</span>
+              <span class="ai-model-name">Moondream2 2B <em>(via Ollama)</em></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 5 -->
+        <div class="project-card">
+          <div class="project-card-top">
+            <span class="badge badge-warning project-tag">Kawalan Keselamatan</span>
+            <span class="project-icon">🔐</span>
+          </div>
+          <h3>5. Pengawal Makmal Komputer Waktu Malam</h3>
+          <p>Selepas waktu sekolah, kamera mengesan pergerakan. Jika wajah yang dikesan bukan staf bertugas, siren
+            berbunyi dan gambar dihantar terus ke emel pentadbir sekolah.</p>
+          <ul class="project-specs">
+            <li><strong>Mod AI:</strong> Pengecaman Wajah + Pengesan Pergerakan</li>
+            <li><strong>Perkakasan:</strong> Speaker &amp; Sambungan Email</li>
+            <li><strong>Tahap:</strong> Menengah Atas</li>
+          </ul>
+          <div class="ai-model-block">
+            <div class="ai-model-row">
+              <span class="ai-provider-badge cloud">☁️ Cloud API</span>
+              <span class="ai-model-name">Google Gemini 2.0 Flash (Vision)</span>
+            </div>
+            <div class="ai-model-row">
+              <span class="ai-provider-badge cloud alt">🔧 Lib Khusus</span>
+              <span class="ai-model-name">DeepFace + OpenCV Motion</span>
+            </div>
+            <div class="ai-model-row">
+              <span class="ai-provider-badge local">🖥️ Lokal &lt;8GB RTX</span>
+              <span class="ai-model-name">InsightFace R50 + YOLOv8n <em>(ONNX)</em></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 6: Sports Analysis -->
+        <div class="project-card project-card--featured">
+          <div class="project-card-top">
+            <span class="badge badge-purple project-tag">Analisis Sukan &amp; Prestasi</span>
+            <span class="project-icon">🏃</span>
+          </div>
+          <h3>6. Sistem Analisis Pergerakan &amp; Prestasi Sukan Pelajar</h3>
+          <p>
+            Kamera merakam pelajar semasa berlari, melompat, atau melakukan teknik sukan. AI menganalisis postur,
+            langkah kaki, kelajuan, dan corak pergerakan &mdash; kemudian menjana <strong>laporan peribadi</strong> yang
+            menjelaskan <em>mengapa</em> pelajar itu laju atau perlahan, apakah kelemahan teknik, dan cadangan latihan
+            khusus untuk penambahbaikan prestasi.
+          </p>
+
+          <ul class="project-specs" style="margin-top: 1rem;">
+            <li><strong>Mod AI:</strong> Pose Estimation + Multimodal Vision Analysis</li>
+            <li><strong>Teknologi:</strong> MediaPipe Pose + Gemini Vision</li>
+            <li><strong>Output:</strong> Laporan PDF / Papan Pemuka Guru Sukan</li>
+            <li><strong>Tahap:</strong> Sekolah Menengah &amp; Program Sukan Berprestasi</li>
+          </ul>
+          <div class="ai-model-block">
+            <div class="ai-model-row">
+              <span class="ai-provider-badge cloud">☁️ Cloud API</span>
+              <span class="ai-model-name">Google Gemini 2.0 Flash (Vision + Text)</span>
+            </div>
+            <div class="ai-model-row">
+              <span class="ai-provider-badge cloud alt">🔧 Lib Pose</span>
+              <span class="ai-model-name">MediaPipe Pose Landmarker (Google)</span>
+            </div>
+            <div class="ai-model-row">
+              <span class="ai-provider-badge local">🖥️ Lokal &lt;8GB RTX</span>
+              <span class="ai-model-name">YOLO11-Pose + LLaVA 7B <em>(via Ollama)</em></span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+
+
+
+      <!-- ======================================================
+       QUICK START SECTION
+       ====================================================== -->
+      <section id="quick-start" class="quickstart-section">
+        <div class="container">
+          <div class="text-center">
+            <span class="section-label">Panduan Memulakan Projek</span>
+            <h2 class="section-title">Cara Memulakan Projek AI-WebCam</h2>
+            <p class="section-subtitle">
+              Ikuti 4 langkah mudah ini untuk mula menjalankan sistem di komputer anda.
+            </p>
+          </div>
+
+          <div class="quickstart-timeline">
+
+            <div class="qs-step">
+              <div class="qs-marker">1</div>
+              <div class="qs-content">
+                <h3>Pasang Python dan Muat Turun Kod Projek</h3>
+                <p>Pastikan Python 3.10 atau lebih baharu sudah dipasang. Kemudian muat turun dan sedia persekitaran
+                  projek
+                  ini.</p>
+                <div class="code-block">git clone https://github.com/sabilyent/AI-WebCam.git
+                  cd AI-WebCam
+                  pip install -r requirements.txt</div>
+              </div>
+            </div>
+
+            <div class="qs-step">
+              <div class="qs-marker">2</div>
+              <div class="qs-content">
+                <h3>Dapatkan Kunci AI API Percuma Anda</h3>
+                <p>Untuk pelajar dan penyelidik, dapatkan <strong>Google Gemini API Key</strong> secara percuma melalui
+                  <strong>Google AI Studio</strong>. Ia percuma untuk tujuan pelajaran dan ujian.
+                </p>
+                <div class="tip-box">
+                  ⚠️ <strong>Penting:</strong> Kunci API anda adalah rahsia peribadi anda. Jangan kongsikan kepada
+                  sesiapa
+                  dan jangan upload ke GitHub tanpa perlindungan!
+                </div>
+              </div>
+            </div>
+
+            <div class="qs-step">
+              <div class="qs-marker">3</div>
+              <div class="qs-content">
+                <h3>Masukkan Data Rujukan ke SQLite3</h3>
+                <p>Gunakan papan pemuka web atau skrip Python mudah untuk mendaftarkan nombor plat kenderaan dan gambar
+                  wajah murid/guru ke dalam pangkalan data <code>data/ai_webcam.db</code> anda.</p>
+              </div>
+            </div>
+
+            <div class="qs-step">
+              <div class="qs-marker">4</div>
+              <div class="qs-content">
+                <h3>Jalankan Sistem dan Lihat Ia Berfungsi!</h3>
+                <p>Mulakan aplikasi dengan satu arahan mudah, kemudian buka papan pemuka di pelayar web anda:</p>
+                <div class="code-block">python app.py</div>
+                <p style="margin-top: 0.5rem;">Buka pelayar anda dan pergi ke <code>http://localhost:5000</code> untuk
+                  melihat suapan kamera langsung dengan analisis AI.</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ======================================================
+       MODALS
+       ====================================================== -->
+
+      <!-- Modal: Add Plate -->
+      <div class="modal-backdrop hidden" id="plate-modal">
+        <div class="modal-box">
+          <div class="modal-header">
+            <h3>Tambah Nombor Plat Baharu</h3>
+            <button class="modal-close" id="close-plate-modal">✕</button>
+          </div>
+          <div class="modal-body">
+            <form id="add-plate-form">
+              <div class="form-group">
+                <label for="input-plate-no">Nombor Plat Kenderaan</label>
+                <input type="text" id="input-plate-no" placeholder="Contoh: VAB 1234" required>
+              </div>
+              <div class="form-group">
+                <label for="input-owner-name">Nama Pemilik</label>
+                <input type="text" id="input-owner-name" placeholder="Contoh: Cikgu Halim" required>
+              </div>
+              <div class="form-group">
+                <label for="input-role">Kategori / Peranan</label>
+                <select id="input-role">
+                  <option value="Guru / Staf">Guru / Staf</option>
+                  <option value="Ibu Bapa VIP">Ibu Bapa / VIP</option>
+                  <option value="Bas Sekolah">Bas Sekolah</option>
+                  <option value="Pelawat">Pelawat / Kontraktor</option>
+                  <option value="Dilarang / Senarai Hitam">Dilarang (Senarai Hitam)</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-ghost" id="cancel-plate-modal">Batal</button>
+            <button type="submit" form="add-plate-form" class="btn btn-primary">Simpan ke SQLite3</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal: Add Face -->
+      <div class="modal-backdrop hidden" id="face-modal">
+        <div class="modal-box">
+          <div class="modal-header">
+            <h3>Daftar Murid / Guru Baharu</h3>
+            <button class="modal-close" id="close-face-modal">✕</button>
+          </div>
+          <div class="modal-body">
+            <form id="add-face-form">
+              <div class="form-group">
+                <label for="input-student-name">Nama Penuh</label>
+                <input type="text" id="input-student-name" placeholder="Contoh: Nurul Huda binti Rosli" required>
+              </div>
+              <div class="form-group">
+                <label for="input-student-class">Kelas / Jawatan</label>
+                <input type="text" id="input-student-class" placeholder="Contoh: 4 Sains 1 / Guru Matematik" required>
+              </div>
+              <div class="form-group">
+                <label for="input-student-category">Kategori</label>
+                <select id="input-student-category">
+                  <option value="Murid">Murid</option>
+                  <option value="Pengawas">Pengawas</option>
+                  <option value="Guru">Guru</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-ghost" id="cancel-face-modal">Batal</button>
+            <button type="submit" form="add-face-form" class="btn btn-primary">Simpan ke SQLite3</button>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ======================================================
+       FOOTER
+       ====================================================== -->
+      <footer class="footer">
+        <div class="container">
+          <div class="footer-top">
+            <a href="#hero" class="brand-logo" style="text-decoration:none;">
+              <div class="logo-icon-wrap" style="width:36px;height:36px;font-size:1.05rem;">📷</div>
+              <div class="logo-texts">
+                <span class="brand-title" style="font-size:1rem;">AI-WebCam</span>
+                <span class="brand-sub">Edtech &amp; Penyelidikan</span>
+              </div>
+            </a>
+            <nav class="footer-nav">
+              <a href="#simulator" class="footer-nav-link">Simulator</a>
+              <a href="#how-it-works" class="footer-nav-link">Cara Berfungsi</a>
+              <a href="#database-lab" class="footer-nav-link">Makmal SQLite3</a>
+              <a href="#school-projects" class="footer-nav-link">Projek Sekolah</a>
+              <a href="#quick-start" class="footer-nav-link">Mula Projek</a>
+            </nav>
+          </div>
+          <div class="footer-divider"></div>
+          <div class="footer-bottom">
+            <div class="footer-bottom-left">
+              <span class="footer-copy">&copy; 2026 AI-WebCam. Dilesenkan untuk Tujuan Pendidikan &amp; Penyelidikan Sumber Terbuka.</span>
+              <span class="footer-powered">Dikuasakan Oleh <strong>Sabily Sdn Bhd</strong></span>
+            </div>
+            <a href="#hero" class="footer-back-top">↑ Kembali ke Atas</a>
+          </div>
+        </div>
+      </footer>
+
+      <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Papan Pemuka{% endblock %} - AI-WebCam</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body>
+
+    <!-- Corporate Navbar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="nav-top-row">
+                <a href="/" class="brand">
+                    <div class="brand-icon">
+                        <i class="fa-solid fa-camera-viewfinder"></i>
+                    </div>
+                    <div class="brand-text">
+                        <h1>AI-WebCam <span class="brand-badge">PRO</span></h1>
+                        <span class="brand-sub">Kit Penyelidikan Visi Komputer & AI</span>
+                    </div>
+                </a>
+
+                <div class="nav-status">
+                    <div class="provider-pill">
+                        <span class="provider-dot"></span>
+                        <span class="provider-name">{{ active_provider_name or 'Gemini 2.0 Flash' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <ul class="nav-links">
+                    <li>
+                        <a href="/" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">
+                            <i class="fa-solid fa-gauge"></i> <span>Papan Pemuka</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/sports" class="nav-link {% if active_page == 'sports' %}active{% endif %}">
+                            <i class="fa-solid fa-mitten"></i> <span>Sukan & Tinju</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/watchlist" class="nav-link {% if active_page == 'watchlist' %}active{% endif %}">
+                            <i class="fa-solid fa-database"></i> <span>Senarai Pantau</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/logs" class="nav-link {% if active_page == 'logs' %}active{% endif %}">
+                            <i class="fa-solid fa-clock-rotate-left"></i> <span>Log Aktiviti</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/settings" class="nav-link {% if active_page == 'settings' %}active{% endif %}">
+                            <i class="fa-solid fa-key"></i> <span>Tetapan API</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-wrapper">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Corporate Footer -->
+    <footer class="footer">
+        <p><strong>AI-WebCam Vision Research Suite</strong> &bull; Dikuasakan Oleh <strong>Sabily Sdn Bhd</strong> &copy; 2026</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

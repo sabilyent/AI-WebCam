@@ -1,0 +1,370 @@
+{% extends "base.html" %}
+
+{% block title %}Pengurusan Kunci API (BYOK){% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+    <div style="margin-bottom: 1.5rem;">
+        <h1 style="font-size: 1.6rem; font-weight: 700; color: var(--dark); margin-bottom: 0.35rem;">
+            <i class="fa-solid fa-key" style="color: var(--primary);"></i> Pengurusan Kunci AI API (BYOK)
+        </h1>
+        <p style="color: var(--dark-muted); font-size: 0.92rem;">
+            Konsep <em>Bring Your Own Key</em> membolehkan anda menggunakan akaun AI peribadi secara bebas tanpa
+            sebarang kos langganan tersembunyi. Kunci disulitkan secara setempat dalam SQLite.
+        </p>
+    </div>
+
+    <!-- Provider Selection Form -->
+    <div class="camera-card" style="padding: 1.5rem; margin-bottom: 1.5rem;">
+        <form id="settings-form" method="POST" action="/api/settings">
+            <!-- 1. Provider Cards -->
+            <label class="form-label">Pilih Pembekal Model AI:</label>
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                <!-- Gemini -->
+                <label
+                    style="border: 2px solid {% if current_setting.provider == 'gemini' %}var(--primary){% else %}var(--border){% endif %}; border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer; display: flex; flex-direction: column; gap: 0.5rem; background: {% if current_setting.provider == 'gemini' %}#f0fdfa{% else %}#ffffff{% endif %};">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <span style="font-weight: 700; font-size: 1.05rem; color: var(--dark);">
+                            <i class="fa-brands fa-google" style="color: #ea4335;"></i> Google Gemini
+                        </span>
+                        <input type="radio" name="provider" value="gemini" {% if current_setting.provider=='gemini'
+                            %}checked{% endif %} onchange="updateProviderFields('gemini')">
+                    </div>
+                    <span style="font-size: 0.8rem; color: var(--dark-muted);">Disyorkan untuk kepantasan (Gemini 3.6
+                        Flash / 1.5 Flash) & kuota percuma Google AI Studio.</span>
+                </label>
+
+                <!-- OpenAI -->
+                <label
+                    style="border: 2px solid {% if current_setting.provider == 'openai' %}var(--primary){% else %}var(--border){% endif %}; border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer; display: flex; flex-direction: column; gap: 0.5rem; background: {% if current_setting.provider == 'openai' %}#f0fdfa{% else %}#ffffff{% endif %};">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <span style="font-weight: 700; font-size: 1.05rem; color: var(--dark);">
+                            <i class="fa-solid fa-cube" style="color: #10a37f;"></i> OpenAI GPT-4o
+                        </span>
+                        <input type="radio" name="provider" value="openai" {% if current_setting.provider=='openai'
+                            %}checked{% endif %} onchange="updateProviderFields('openai')">
+                    </div>
+                    <span style="font-size: 0.8rem; color: var(--dark-muted);">Sesuai untuk analisis perincian tinggi
+                        menggunakan model GPT-4o mini.</span>
+                </label>
+
+                <!-- Ollama -->
+                <label
+                    style="border: 2px solid {% if current_setting.provider == 'ollama' %}var(--primary){% else %}var(--border){% endif %}; border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer; display: flex; flex-direction: column; gap: 0.5rem; background: {% if current_setting.provider == 'ollama' %}#f0fdfa{% else %}#ffffff{% endif %};">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <span style="font-weight: 700; font-size: 1.05rem; color: var(--dark);">
+                            <i class="fa-solid fa-server" style="color: #6366f1;"></i> Ollama (Tempatan)
+                        </span>
+                        <input type="radio" name="provider" value="ollama" {% if current_setting.provider=='ollama'
+                            %}checked{% endif %} onchange="updateProviderFields('ollama')">
+                    </div>
+                    <span style="font-size: 0.8rem; color: var(--dark-muted);">100% luar talian (Offline) pada GPU RTX
+                        &gt;8GB (Moondream / LLaVA 7B).</span>
+                </label>
+            </div>
+
+            <!-- 2. API Key Input (Before Model so user can fetch models using their key) -->
+            <div class="form-group" id="api-key-group"
+                style="{% if current_setting.provider == 'ollama' %}display: none;{% endif %}">
+                <label class="form-label" for="api_key">
+                    Kunci API (API Key):
+                    <span id="key-help-link" style="font-weight: 400; font-size: 0.8rem; margin-left: 0.5rem;">
+                        <a href="https://aistudio.google.com/app/apikey" target="_blank"
+                            style="color: var(--primary);">Dapatkan Kunci Percuma di Google AI Studio &rarr;</a>
+                    </span>
+                </label>
+                <div style="position: relative;">
+                    <input type="password" name="api_key" id="api_key" class="form-control"
+                        placeholder="Contoh: AIzaSy... / sk-proj-..." value="{{ current_setting.api_key }}">
+                    <button type="button" onclick="togglePasswordVisibility()"
+                        style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--dark-muted); cursor: pointer;">
+                        <i id="eye-icon" class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+                <small style="color: var(--dark-muted); font-size: 0.78rem; display: block; margin-top: 0.35rem;">
+                    Kunci anda disimpan secara tersulit dalam pangkalan data SQLite tempatan
+                    (<code>data/ai_webcam.db</code>) dan tidak dihantar ke mana-mana pelayan pihak ketiga.
+                </small>
+            </div>
+
+            <!-- 3. Base URL (For Ollama) -->
+            <div class="form-group" id="base-url-group"
+                style="{% if current_setting.provider != 'ollama' %}display: none;{% endif %}">
+                <label class="form-label" for="base_url">Alamat Pelayan Ollama (URL):</label>
+                <input type="text" name="base_url" id="base_url" class="form-control"
+                    placeholder="http://localhost:11434"
+                    value="{{ current_setting.base_url or 'http://localhost:11434' }}">
+            </div>
+
+            <!-- 4. Model Selection & Fetch Button -->
+            <div class="form-group">
+                <div
+                    style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem; flex-wrap: wrap; gap: 0.5rem;">
+                    <label class="form-label" for="model_name" style="margin-bottom: 0;">Pilihan Model:</label>
+                    <!-- Button List All Models -->
+                    <button type="button" id="list-models-btn" class="btn btn-outline btn-sm"
+                        onclick="fetchAvailableModels()"
+                        style="color: var(--primary); border-color: var(--primary-light);">
+                        <i class="fa-solid fa-list-check"></i> Senaraikan Semua Model (List All Models)
+                    </button>
+                </div>
+
+                <select name="model_name" id="model_name" class="form-control">
+                    {% if current_setting.provider == 'gemini' %}
+                    <option value="gemini-3.6-flash" {% if current_setting.model_name in
+                        ['gemini-3.6-flash', 'gemini-2.0-flash' ] %}selected{% endif %}>gemini-3.6-flash (Terkini &
+                        Disyorkan)</option>
+                    <option value="gemini-2.5-flash" {% if current_setting.model_name=='gemini-2.5-flash' %}selected{%
+                        endif %}>gemini-2.5-flash</option>
+                    <option value="gemini-1.5-flash" {% if current_setting.model_name=='gemini-1.5-flash' %}selected{%
+                        endif %}>gemini-1.5-flash</option>
+                    <option value="gemini-1.5-pro" {% if current_setting.model_name=='gemini-1.5-pro' %}selected{% endif
+                        %}>gemini-1.5-pro</option>
+                    {% if current_setting.model_name and current_setting.model_name not in ['gemini-3.6-flash',
+                    'gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash'] %}
+                    <option value="{{ current_setting.model_name }}" selected>{{ current_setting.model_name }} (Tersuai)
+                    </option>
+                    {% endif %}
+                    {% elif current_setting.provider == 'openai' %}
+                    <option value="gpt-4o-mini" {% if current_setting.model_name=='gpt-4o-mini' %}selected{% endif %}>
+                        gpt-4o-mini (Cekap & Menjimatkan)</option>
+                    <option value="gpt-4o" {% if current_setting.model_name=='gpt-4o' %}selected{% endif %}>gpt-4o
+                        (Ketepatan Maksimum)</option>
+                    {% if current_setting.model_name and current_setting.model_name not in ['gpt-4o-mini', 'gpt-4o'] %}
+                    <option value="{{ current_setting.model_name }}" selected>{{ current_setting.model_name }} (Tersuai)
+                    </option>
+                    {% endif %}
+                    {% else %}
+                    <option value="moondream" {% if current_setting.model_name=='moondream' %}selected{% endif %}>
+                        moondream (2B parameter - Sangat Pantas)</option>
+                    <option value="llava:7b" {% if current_setting.model_name=='llava:7b' %}selected{% endif %}>llava:7b
+                        (Sesuai GPU 6GB-8GB VRAM)</option>
+                    <option value="llava-phi3" {% if current_setting.model_name=='llava-phi3' %}selected{% endif %}>
+                        llava-phi3</option>
+                    {% if current_setting.model_name and current_setting.model_name not in ['moondream', 'llava:7b',
+                    'llava-phi3'] %}
+                    <option value="{{ current_setting.model_name }}" selected>{{ current_setting.model_name }} (Tersuai)
+                    </option>
+                    {% endif %}
+                    {% endif %}
+                </select>
+
+                <!-- Custom model text input -->
+                <div style="margin-top: 0.6rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <small style="color: var(--dark-muted); white-space: nowrap;">Atau taip nama model:</small>
+                    <input type="text" id="custom_model_input" class="form-control"
+                        style="font-size: 0.85rem; padding: 0.35rem 0.65rem;" placeholder="Cth: gemini-3.6-flash"
+                        oninput="syncCustomModel(this.value)">
+                </div>
+
+                <div id="models-fetch-status" style="font-size: 0.8rem; margin-top: 0.35rem;"></div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div style="display: flex; gap: 0.75rem; align-items: center; margin-top: 1.5rem; flex-wrap: wrap;">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-floppy-disk"></i> Simpan & Aktifkan Tetapan
+                </button>
+                <button type="button" id="test-connection-btn" class="btn btn-outline" onclick="testConnection()">
+                    <i class="fa-solid fa-plug"></i> Uji Sambungan
+                </button>
+                <span id="test-result-indicator" style="font-size: 0.88rem; font-weight: 500;"></span>
+            </div>
+        </form>
+    </div>
+
+    <!-- Info Box -->
+    <div style="background: #f0fdfa; border: 1px solid #ccfbf1; border-radius: var(--radius-md); padding: 1.25rem;">
+        <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 0.5rem;">
+            <i class="fa-solid fa-shield-halved"></i> Panduan Kunci & Model AI (2026)
+        </h3>
+        <ul
+            style="font-size: 0.85rem; color: var(--dark); padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.35rem;">
+            <li><strong>Google Gemini 3.6 Flash / 2.5 Flash:</strong> Model generasi baharu dengan kependaman rendah dan
+                ketepatan tinggi. Dapatkan kunci API secara percuma di <a href="https://aistudio.google.com/app/apikey"
+                    target="_blank" style="color: var(--primary); font-weight: 600;">Google AI Studio</a>.</li>
+            <li><strong>Fungsi "Senaraikan Semua Model":</strong> Tekan butang di atas untuk meminta pelayan API
+                memaparkan senarai semua model yang disokong secara langsung oleh akaun/kunci anda.</li>
+            <li><strong>Model Tempatan Ollama:</strong> Boleh digunakan 100% tanpa kunci API dan tanpa sambungan
+                internet.</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function togglePasswordVisibility() {
+        const field = document.getElementById("api_key");
+        const icon = document.getElementById("eye-icon");
+        if (field.type === "password") {
+            field.type = "text";
+            icon.className = "fa-solid fa-eye-slash";
+        } else {
+            field.type = "password";
+            icon.className = "fa-solid fa-eye";
+        }
+    }
+
+    function syncCustomModel(val) {
+        val = val.trim();
+        if (!val) return;
+        const select = document.getElementById("model_name");
+        // Check if exists in options
+        let found = false;
+        for (let opt of select.options) {
+            if (opt.value === val) {
+                opt.selected = true;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            const newOpt = new Option(`${val} (Tersuai)`, val, true, true);
+            select.add(newOpt);
+        }
+    }
+
+    function updateProviderFields(provider) {
+        const keyGroup = document.getElementById("api-key-group");
+        const urlGroup = document.getElementById("base-url-group");
+        const modelSelect = document.getElementById("model_name");
+        const helpLink = document.getElementById("key-help-link");
+        const statusDiv = document.getElementById("models-fetch-status");
+        if (statusDiv) statusDiv.innerHTML = "";
+
+        if (provider === "gemini") {
+            keyGroup.style.display = "block";
+            urlGroup.style.display = "none";
+            helpLink.innerHTML = `<a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--primary);">Dapatkan Kunci Percuma di Google AI Studio &rarr;</a>`;
+            modelSelect.innerHTML = `
+            <option value="gemini-3.6-flash" selected>gemini-3.6-flash (Terkini & Disyorkan)</option>
+            <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+            <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+            <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+        `;
+        } else if (provider === "openai") {
+            keyGroup.style.display = "block";
+            urlGroup.style.display = "none";
+            helpLink.innerHTML = `<a href="https://platform.openai.com/api-keys" target="_blank" style="color: var(--primary);">Dapatkan Kunci OpenAI &rarr;</a>`;
+            modelSelect.innerHTML = `
+            <option value="gpt-4o-mini" selected>gpt-4o-mini (Cekap & Menjimatkan)</option>
+            <option value="gpt-4o">gpt-4o (Ketepatan Maksimum)</option>
+        `;
+        } else if (provider === "ollama") {
+            keyGroup.style.display = "none";
+            urlGroup.style.display = "block";
+            modelSelect.innerHTML = `
+            <option value="moondream" selected>moondream (2B - Sangat Pantas)</option>
+            <option value="llava:7b">llava:7b (Sesuai GPU 6GB-8GB VRAM)</option>
+            <option value="llava-phi3">llava-phi3</option>
+        `;
+        }
+    }
+
+    // Function to fetch all models from the API
+    async function fetchAvailableModels() {
+        const btn = document.getElementById("list-models-btn");
+        const statusDiv = document.getElementById("models-fetch-status");
+        const modelSelect = document.getElementById("model_name");
+
+        const form = document.getElementById("settings-form");
+        const formData = new FormData(form);
+        const provider = formData.get("provider") || "gemini";
+        const apiKey = document.getElementById("api_key").value.trim();
+        const baseUrl = document.getElementById("base_url").value.trim();
+
+        if (provider !== "ollama" && !apiKey) {
+            showToast("Sila masukkan Kunci API terlebih dahulu untuk menyenaraikan model.", "danger");
+            document.getElementById("api_key").focus();
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Menghubungi ${provider.toUpperCase()}...`;
+        statusDiv.innerHTML = `<span style="color: var(--dark-muted);"><i class="fa-solid fa-arrows-rotate fa-spin"></i> Memuat turun senarai model terkini dari pelayan...</span>`;
+
+        try {
+            const res = await fetch("/api/list_models", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    provider: provider,
+                    api_key: apiKey,
+                    base_url: baseUrl
+                })
+            });
+
+            const data = await res.json();
+            if (data.success && data.models && data.models.length > 0) {
+                // Keep track of current selection
+                const currentVal = modelSelect.value;
+                modelSelect.innerHTML = "";
+
+                let foundCurrent = false;
+                data.models.forEach((m, idx) => {
+                    const opt = document.createElement("option");
+                    opt.value = m.id;
+                    opt.textContent = m.name || m.id;
+                    if (m.id === currentVal || (!foundCurrent && (m.id.includes("3.6-flash") || m.id.includes("gpt-4o-mini") || m.id === "moondream"))) {
+                        opt.selected = true;
+                        foundCurrent = true;
+                    }
+                    modelSelect.appendChild(opt);
+                });
+
+                statusDiv.innerHTML = `
+                <span style="color: var(--success); font-weight: 600;">
+                    <i class="fa-solid fa-circle-check"></i> ${data.models.length} model berjaya dimuat turun dari pelayan ${data.provider.toUpperCase()}!
+                </span>
+            `;
+                showToast(`${data.models.length} model berjaya dimuat turun!`, "success");
+            } else {
+                const err = data.error || "Tiada model ditemui.";
+                statusDiv.innerHTML = `<span style="color: var(--danger);"><i class="fa-solid fa-circle-xmark"></i> ${err}</span>`;
+                showToast(err, "danger");
+            }
+        } catch (e) {
+            statusDiv.innerHTML = `<span style="color: var(--danger);"><i class="fa-solid fa-circle-xmark"></i> Ralat sambungan: ${e.message}</span>`;
+            showToast("Gagal memuat turun senarai model: " + e.message, "danger");
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-list-check"></i> Senaraikan Semua Model (List All Models)`;
+        }
+    }
+
+    async function testConnection() {
+        const btn = document.getElementById("test-connection-btn");
+        const indicator = document.getElementById("test-result-indicator");
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Menguji...`;
+        indicator.textContent = "";
+
+        const form = document.getElementById("settings-form");
+        const formData = new FormData(form);
+        const payload = Object.fromEntries(formData.entries());
+
+        try {
+            const res = await fetch("/api/test_connection", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (data.success) {
+                indicator.innerHTML = `<span style="color: var(--success);"><i class="fa-solid fa-check"></i> Sambungan berjaya! (${data.message})</span>`;
+                showToast("Sambungan API berjaya disahkan!", "success");
+            } else {
+                indicator.innerHTML = `<span style="color: var(--danger);"><i class="fa-solid fa-xmark"></i> ${data.error}</span>`;
+                showToast("Gagal menguji sambungan: " + data.error, "danger");
+            }
+        } catch (err) {
+            indicator.innerHTML = `<span style="color: var(--danger);">Ralat: ${err.message}</span>`;
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-plug"></i> Uji Sambungan`;
+        }
+    }
+</script>
+{% endblock %}

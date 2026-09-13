@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI-WebCam | Nod Kamera Telefon</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-dark: #1e293b;
+            --teal-accent: #14b8a6;
+            --teal-hover: #0d9488;
+            --emerald-green: #10b981;
+            --rose-red: #f43f5e;
+            --amber-warn: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Top Header */
+        .phone-header {
+            padding: 0.75rem 1rem;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 20;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .brand-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #14b8a6, #0ea5e9);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: #fff;
+        }
+
+        .brand-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.01em;
+        }
+
+        .brand-subtitle {
+            font-size: 0.7rem;
+            color: var(--teal-accent);
+            font-weight: 600;
+        }
+
+        .status-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.65rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--emerald-green);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-chip.disconnected {
+            background: rgba(244, 63, 94, 0.15);
+            color: var(--rose-red);
+            border-color: rgba(244, 63, 94, 0.3);
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: currentColor;
+            animation: pulse-ring 1.5s infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.9); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.5; }
+            100% { transform: scale(0.9); opacity: 1; }
+        }
+
+        /* Video Container */
+        .camera-viewport {
+            flex: 1;
+            position: relative;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Viewfinder HUD Overlay */
+        .viewport-hud {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1rem;
+        }
+
+        .hud-crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 220px;
+            height: 220px;
+            border: 2px dashed rgba(20, 184, 166, 0.4);
+            border-radius: 16px;
+        }
+
+        .hud-crosshair::before,
+        .hud-crosshair::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-color: var(--teal-accent);
+            border-style: solid;
+        }
+        .hud-crosshair::before {
+            top: -2px; left: -2px;
+            border-width: 3px 0 0 3px;
+            border-top-left-radius: 14px;
+        }
+        .hud-crosshair::after {
+            bottom: -2px; right: -2px;
+            border-width: 0 3px 3px 0;
+            border-bottom-right-radius: 14px;
+        }
+
+        .hud-meta-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .meta-pill {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(4px);
+            padding: 0.35rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        /* Bottom Controls */
+        .phone-controls {
+            background: rgba(30, 41, 59, 0.98);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 0.75rem 1rem 1.25rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            z-index: 20;
+        }
+
+        .camera-name-row {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .camera-name-input {
+            flex: 1;
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 0.45rem 0.75rem;
+            color: #fff;
+            font-size: 0.85rem;
+            outline: none;
+        }
+        .camera-name-input:focus {
+            border-color: var(--teal-accent);
+        }
+
+        .action-buttons-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+        }
+
+        .btn-cam-action {
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            padding: 0.7rem 0.2rem;
+            color: #e2e8f0;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.35rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-cam-action i {
+            font-size: 1.15rem;
+            color: var(--teal-accent);
+        }
+
+        .btn-cam-action:active {
+            transform: scale(0.96);
+            background: rgba(20, 184, 166, 0.15);
+            border-color: var(--teal-accent);
+        }
+
+        .btn-cam-action.active {
+            background: var(--teal-accent);
+            color: #0f172a;
+            border-color: var(--teal-accent);
+        }
+        .btn-cam-action.active i {
+            color: #0f172a;
+        }
+
+        .btn-cam-action.danger {
+            border-color: rgba(244, 63, 94, 0.4);
+        }
+        .btn-cam-action.danger i {
+            color: var(--rose-red);
+        }
+
+        .wakelock-pill {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+        .wakelock-pill i {
+            color: var(--amber-warn);
+        }
+
+        /* Error modal / overlay */
+        #error-banner {
+            position: fixed;
+            top: 60px;
+            left: 12px;
+            right: 12px;
+            background: #e11d48;
+            color: #fff;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: none;
+            z-index: 100;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        /* HTTPS Required Fullscreen Modal */
+        .security-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.96);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.25rem;
+        }
+
+        .security-modal-card {
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 390px;
+            padding: 1.75rem 1.25rem;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+
+        .security-modal-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 14px;
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--amber-warn);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn-upgrade-https {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            background: linear-gradient(135deg, #14b8a6, #0ea5e9);
+            color: #0f172a;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1.25rem;
+            box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
+        }
+
+        .btn-upgrade-https:active {
+            transform: scale(0.98);
+        }
+
+        .ssl-guide-box {
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 0.85rem;
+            margin-top: 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            line-height: 1.5;
+            color: #cbd5e1;
+        }
+
+        .btn-snap-fallback {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            background: transparent;
+            color: #94a3b8;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.82rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            margin-top: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Error Banner -->
+    <div id="error-banner">
+        <i class="fa-solid fa-triangle-exclamation"></i> <span id="error-message"></span>
+    </div>
+
+    <!-- HTTPS Required Modal (Auto-pops if insecure context) -->
+    <div id="security-modal" class="security-modal-overlay" style="display: none;">
+        <div class="security-modal-card">
+            <div class="security-modal-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h2 style="font-size: 1.15rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;">
+                Akses Kamera Memerlukan HTTPS
+            </h2>
+            <p style="font-size: 0.82rem; color: #94a3b8; line-height: 1.5;">
+                Pelayar telefon pintar (Chrome & Safari) menyekat akses perkakasan kamera pada alamat <code>http://</code> biasa atas faktor keselamatan.
+            </p>
+
+            <button type="button" id="btn-switch-https" class="btn-upgrade-https">
+                <i class="fa-solid fa-lock"></i> Beralih ke Sambungan HTTPS
+            </button>
+
+            <div class="ssl-guide-box">
+                <strong style="color: #f59e0b; display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.25rem;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Panduan Sijil Tempatan:
+                </strong>
+                Apabila telefon memaparkan <em>"Your connection is not private"</em>, klik <strong>Advanced (Lanjutan)</strong> &rarr; <strong>Proceed to {{ local_ip }} (Lanjutkan)</strong>. Ini 100% selamat kerana ia rangkaian Wi-Fi peribadi anda sendiri.
+            </div>
+
+            <!-- Fallback Snap Input -->
+            <input type="file" id="fallback-photo-input" accept="image/*" capture="environment" style="display: none;">
+            <button type="button" id="btn-trigger-fallback-snap" class="btn-snap-fallback">
+                <i class="fa-solid fa-camera"></i> Atau Ambil Gambar Manual (Snap Mode)
+            </button>
+        </div>
+    </div>
+
+    <!-- Top Navigation Header -->
+    <header class="phone-header">
+        <div class="header-brand">
+            <div class="brand-icon">
+                <i class="fa-solid fa-camera"></i>
+            </div>
+            <div>
+                <h1 class="brand-title">AI-WebCam Node</h1>
+                <div class="brand-subtitle">Nod Tanpa Wayar</div>
+            </div>
+        </div>
+
+        <div class="status-chip" id="connection-chip">
+            <span class="pulse-dot"></span>
+            <span id="connection-text">MENYAMBUNG</span>
+        </div>
+    </header>
+
+    <!-- Camera Viewfinder -->
+    <main class="camera-viewport">
+        <video id="video-preview" autoplay playsinline muted></video>
+        <canvas id="frame-canvas" style="display: none;"></canvas>
+
+        <!-- Dynamic Viewfinder HUD Overlay -->
+        <div class="viewport-hud">
+            <div class="hud-meta-top">
+                <div class="meta-pill">
+                    <i class="fa-solid fa-signal"></i>
+                    <span id="fps-display">0.0 FPS</span>
+                </div>
+                <div class="meta-pill">
+                    <i class="fa-solid fa-server"></i>
+                    <span>{{ local_ip }}</span>
+                </div>
+            </div>
+
+            <div class="hud-crosshair"></div>
+
+            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                <div class="meta-pill" style="font-size: 0.7rem;">
+                    <i class="fa-solid fa-expand"></i>
+                    <span id="resolution-display">640x480</span>
+                </div>
+                <div class="meta-pill" style="font-size: 0.7rem;">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span id="latency-display">-- ms</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Controls & Camera Telemetry -->
+    <footer class="phone-controls">
+        <div class="camera-name-row">
+            <label style="font-size: 0.75rem; color: var(--text-muted); white-space: nowrap;">
+                <i class="fa-solid fa-tag"></i> Nama Nod:
+            </label>
+            <input type="text" id="camera-name-input" class="camera-name-input" value="{{ cam_name }}" placeholder="cth: Kamera Pintu Pagar">
+        </div>
+
+        <div class="action-buttons-row">
+            <button type="button" class="btn-cam-action" id="btn-flip-cam">
+                <i class="fa-solid fa-camera-rotate"></i>
+                <span>Tukar Lensa</span>
+            </button>
+
+            <button type="button" class="btn-cam-action" id="btn-torch">
+                <i class="fa-solid fa-lightbulb"></i>
+                <span>Lampu Suluh</span>
+            </button>
+
+            <button type="button" class="btn-cam-action active" id="btn-stream-toggle">
+                <i class="fa-solid fa-video"></i>
+                <span id="stream-btn-label">Menstrim</span>
+            </button>
+
+            <button type="button" class="btn-cam-action" id="btn-res-toggle">
+                <i class="fa-solid fa-sliders"></i>
+                <span id="res-btn-label">Standard</span>
+            </button>
+        </div>
+
+        <div class="wakelock-pill">
+            <i class="fa-solid fa-lock"></i>
+            <span>Skrin kekal aktif automatik (Screen WakeLock)</span>
+        </div>
+    </footer>
+
+    <script>
+        (function() {
+            const camId = "{{ cam_id }}" || "phone_1";
+            const videoEl = document.getElementById("video-preview");
+            const canvasEl = document.getElementById("frame-canvas");
+            const ctx = canvasEl.getContext("2d");
+
+            const camNameInput = document.getElementById("camera-name-input");
+            const connectionChip = document.getElementById("connection-chip");
+            const connectionText = document.getElementById("connection-text");
+            const fpsDisplay = document.getElementById("fps-display");
+            const latencyDisplay = document.getElementById("latency-display");
+            const resDisplay = document.getElementById("resolution-display");
+            const errorBanner = document.getElementById("error-banner");
+            const errorMessage = document.getElementById("error-message");
+            const securityModal = document.getElementById("security-modal");
+            const btnSwitchHttps = document.getElementById("btn-switch-https");
+            const fallbackInput = document.getElementById("fallback-photo-input");
+            const btnFallbackSnap = document.getElementById("btn-trigger-fallback-snap");
+
+            const btnFlipCam = document.getElementById("btn-flip-cam");
+            const btnTorch = document.getElementById("btn-torch");
+            const btnStreamToggle = document.getElementById("btn-stream-toggle");
+            const streamBtnLabel = document.getElementById("stream-btn-label");
+            const btnResToggle = document.getElementById("btn-res-toggle");
+            const resBtnLabel = document.getElementById("res-btn-label");
+
+            let currentFacingMode = "environment";
+            let currentStream = null;
+            let currentTrack = null;
+            let isStreaming = true;
+            let isTorchOn = false;
+            let targetFps = 12;
+            let streamInterval = null;
+            let targetWidth = 640;
+            let targetHeight = 480;
+
+            let framesSent = 0;
+            let fpsTimer = performance.now();
+            let isSending = false;
+
+            function showError(msg) {
+                errorMessage.textContent = msg;
+                errorBanner.style.display = "block";
+                setTimeout(() => {
+                    errorBanner.style.display = "none";
+                }, 5000);
+            }
+
+            // Screen WakeLock
+            async function requestWakeLock() {
+                try {
+                    if ("wakeLock" in navigator) {
+                        await navigator.wakeLock.request("screen");
+                    }
+                } catch (err) {
+                    console.warn("[WakeLock] Tidak disokong atau gagal:", err);
+                }
+            }
+
+            // Check for Secure Context & getUserMedia availability
+            function checkMediaDevicesSupport() {
+                const hasSupport = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+                if (!hasSupport) {
+                    securityModal.style.display = "flex";
+                    connectionChip.classList.add("disconnected");
+                    connectionText.textContent = "🔴 PERLUKAN HTTPS";
+                    return false;
+                }
+                return true;
+            }
+
+            // Start Camera Stream
+            async function initCamera() {
+                if (!checkMediaDevicesSupport()) {
+                    return;
+                }
+
+                if (currentStream) {
+                    currentStream.getTracks().forEach(track => track.stop());
+                }
+
+                const constraints = {
+                    audio: false,
+                    video: {
+                        facingMode: { ideal: currentFacingMode },
+                        width: { ideal: targetWidth },
+                        height: { ideal: targetHeight }
+                    }
+                };
+
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                    currentStream = stream;
+                    currentTrack = stream.getVideoTracks()[0];
+                    videoEl.srcObject = stream;
+
+                    videoEl.onloadedmetadata = () => {
+                        targetWidth = videoEl.videoWidth || 640;
+                        targetHeight = videoEl.videoHeight || 480;
+                        canvasEl.width = 640;
+                        canvasEl.height = Math.round(640 * (targetHeight / targetWidth));
+                        resDisplay.textContent = `${canvasEl.width}x${canvasEl.height}`;
+                        requestWakeLock();
+                    };
+
+                    connectionChip.classList.remove("disconnected");
+                    connectionText.textContent = "🟢 LIVE";
+                } catch (err) {
+                    console.error("[Camera] Ralat membuka kamera:", err);
+                    if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
+                        showError("Kebenaran kamera disekat. Sila benarkan akses kamera pada pelayar telefon anda.");
+                    } else {
+                        showError("Tidak dapat mengakses kamera: " + err.message);
+                    }
+                    connectionChip.classList.add("disconnected");
+                    connectionText.textContent = "🔴 RALAT KAMERA";
+                }
+            }
+
+            // Send single frame to AI-WebCam server via POST
+            async function sendFrame() {
+                if (!isStreaming || isSending || !videoEl.videoWidth) return;
+
+                isSending = true;
+                const startTime = performance.now();
+
+                ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
+
+                canvasEl.toBlob(async (blob) => {
+                    if (!blob) {
+                        isSending = false;
+                        return;
+                    }
+
+                    const formData = new FormData();
+                    formData.append("cam_id", camId);
+                    formData.append("cam_name", camNameInput.value.trim() || "Kamera Telefon");
+                    formData.append("frame", blob, "frame.jpg");
+
+                    try {
+                        const response = await fetch("/api/remote_camera/frame", {
+                            method: "POST",
+                            body: formData
+                        });
+
+                        const endTime = performance.now();
+                        const latency = Math.round(endTime - startTime);
+                        latencyDisplay.textContent = `${latency} ms`;
+
+                        if (response.ok) {
+                            framesSent++;
+                            const elapsed = (endTime - fpsTimer) / 1000;
+                            if (elapsed >= 1.0) {
+                                const currentFps = (framesSent / elapsed).toFixed(1);
+                                fpsDisplay.textContent = `${currentFps} FPS`;
+                                framesSent = 0;
+                                fpsTimer = endTime;
+                            }
+
+                            connectionChip.classList.remove("disconnected");
+                            connectionText.textContent = "🟢 LIVE";
+                        } else {
+                            connectionChip.classList.add("disconnected");
+                            connectionText.textContent = "🔴 RALAT PELAYAN";
+                        }
+                    } catch (err) {
+                        connectionChip.classList.add("disconnected");
+                        connectionText.textContent = "🔴 TERPUTUS";
+                    } finally {
+                        isSending = false;
+                    }
+                }, "image/jpeg", 0.75);
+            }
+
+            function startStreamLoop() {
+                if (streamInterval) clearInterval(streamInterval);
+                const delayMs = Math.round(1000 / targetFps);
+                streamInterval = setInterval(sendFrame, delayMs);
+            }
+
+            // Switch to HTTPS redirect handler
+            btnSwitchHttps.addEventListener("click", () => {
+                const targetHost = window.location.hostname;
+                const isIpOrLocal = /^(localhost|127\.0\.0\.1|192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(targetHost);
+                const portPart = isIpOrLocal ? ":5001" : "";
+                const targetSearch = window.location.search || `?id=${camId}`;
+                window.location.href = `https://${targetHost}${portPart}/phone_cam${targetSearch}`;
+            });
+
+            // Fallback manual photo snap handling
+            btnFallbackSnap.addEventListener("click", () => {
+                fallbackInput.click();
+            });
+
+            fallbackInput.addEventListener("change", async (e) => {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append("cam_id", camId);
+                formData.append("cam_name", camNameInput.value.trim() || "Kamera Telefon");
+                formData.append("frame", file, "snap.jpg");
+
+                connectionText.textContent = "MENGHANTAR...";
+                try {
+                    const res = await fetch("/api/remote_camera/frame", {
+                        method: "POST",
+                        body: formData
+                    });
+                    if (res.ok) {
+                        securityModal.style.display = "none";
+                        connectionChip.classList.remove("disconnected");
+                        connectionText.textContent = "🟢 GAMBAR DIHANTAR";
+                        showError("Foto berjaya dimuat naik ke AI-WebCam!");
+                    } else {
+                        showError("Gagal menghantar foto ke pelayan.");
+                    }
+                } catch (err) {
+                    showError("Ralat rangkaian ketika menghantar foto.");
+                }
+            });
+
+            // Event Listeners
+            btnFlipCam.addEventListener("click", async () => {
+                currentFacingMode = (currentFacingMode === "environment") ? "user" : "environment";
+                await initCamera();
+            });
+
+            btnTorch.addEventListener("click", async () => {
+                if (!currentTrack) return;
+                try {
+                    const capabilities = currentTrack.getCapabilities ? currentTrack.getCapabilities() : {};
+                    if (capabilities.torch) {
+                        isTorchOn = !isTorchOn;
+                        await currentTrack.applyConstraints({
+                            advanced: [{ torch: isTorchOn }]
+                        });
+                        btnTorch.classList.toggle("active", isTorchOn);
+                    } else {
+                        showError("Lampu suluh (torch) tidak disokong oleh perkakasan kamera ini.");
+                    }
+                } catch (e) {
+                    showError("Tidak dapat menukar lampu suluh: " + e.message);
+                }
+            });
+
+            btnStreamToggle.addEventListener("click", () => {
+                isStreaming = !isStreaming;
+                if (isStreaming) {
+                    btnStreamToggle.classList.add("active");
+                    btnStreamToggle.classList.remove("danger");
+                    streamBtnLabel.textContent = "Menstrim";
+                    connectionChip.classList.remove("disconnected");
+                    connectionText.textContent = "🟢 LIVE";
+                } else {
+                    btnStreamToggle.classList.remove("active");
+                    btnStreamToggle.classList.add("danger");
+                    streamBtnLabel.textContent = "Dijeda";
+                    connectionChip.classList.add("disconnected");
+                    connectionText.textContent = "⏸ DIJEDA";
+                }
+            });
+
+            btnResToggle.addEventListener("click", () => {
+                if (canvasEl.width === 640) {
+                    canvasEl.width = 800;
+                    canvasEl.height = Math.round(800 * (targetHeight / targetWidth));
+                    resBtnLabel.textContent = "Tinggi (HD)";
+                    btnResToggle.classList.add("active");
+                } else {
+                    canvasEl.width = 640;
+                    canvasEl.height = Math.round(640 * (targetHeight / targetWidth));
+                    resBtnLabel.textContent = "Standard";
+                    btnResToggle.classList.remove("active");
+                }
+                resDisplay.textContent = `${canvasEl.width}x${canvasEl.height}`;
+            });
+
+            document.addEventListener("visibilitychange", () => {
+                if (document.visibilityState === "visible") {
+                    requestWakeLock();
+                }
+            });
+
+            // Initial startup
+            initCamera();
+            startStreamLoop();
+        })();
+    </script>
+</body>
+</html>

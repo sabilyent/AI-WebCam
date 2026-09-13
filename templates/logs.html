@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Log Aktiviti Pengesanan{% endblock %}
+
+{% block content %}
+<div>
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1 style="font-size: 1.6rem; font-weight: 700; color: var(--dark); margin-bottom: 0.35rem;">
+                <i class="fa-solid fa-clock-rotate-left" style="color: var(--primary);"></i> Log Aktiviti Pengesanan
+            </h1>
+            <p style="color: var(--dark-muted); font-size: 0.92rem;">
+                Semua rekod pengesanan visual dan hasil padanan disimpan secara kekal dalam pangkalan data SQLite3 tempatan.
+            </p>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <form method="POST" action="/api/logs/clear" onsubmit="return confirm('Adakah anda pasti mahu mengosongkan semua rekod log?')">
+                <button type="submit" class="btn btn-outline btn-danger btn-sm">
+                    <i class="fa-solid fa-trash-can"></i> Kosongkan Semua Log
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Filter Pills -->
+    <div style="display: flex; gap: 0.4rem; margin-bottom: 1rem; flex-wrap: wrap;">
+        <a href="/logs" class="btn btn-sm {% if not current_filter %}btn-primary{% else %}btn-outline{% endif %}">Semua ({{ logs|length }})</a>
+        <a href="/logs?task=ANPR" class="btn btn-sm {% if current_filter == 'ANPR' %}btn-primary{% else %}btn-outline{% endif %}"><i class="fa-solid fa-car"></i> ANPR</a>
+        <a href="/logs?task=FACE" class="btn btn-sm {% if current_filter == 'FACE' %}btn-primary{% else %}btn-outline{% endif %}"><i class="fa-solid fa-user"></i> Wajah</a>
+        <a href="/logs?task=OCR" class="btn btn-sm {% if current_filter == 'OCR' %}btn-primary{% else %}btn-outline{% endif %}"><i class="fa-solid fa-file-lines"></i> OCR</a>
+        <a href="/logs?task=SCENE" class="btn btn-sm {% if current_filter == 'SCENE' %}btn-primary{% else %}btn-outline{% endif %}"><i class="fa-solid fa-eye"></i> Senario</a>
+        <a href="/logs?task=SPORTS" class="btn btn-sm {% if current_filter == 'SPORTS' %}btn-primary{% else %}btn-outline{% endif %}"><i class="fa-solid fa-mitten"></i> Sukan & Tinju</a>
+    </div>
+
+    <!-- Logs Table -->
+    <div class="table-card" style="margin-top: 0;">
+        <div style="overflow-x: auto;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 70px;">ID</th>
+                        <th style="width: 170px;">Tarikh & Masa</th>
+                        <th style="width: 110px;">Tugasan</th>
+                        <th>Hasil Pengesanan</th>
+                        <th style="width: 140px;">Status Padanan</th>
+                        <th>Maklumat Tambahan</th>
+                        <th style="width: 100px;">Keyakinan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td><small style="color: var(--dark-muted);">#{{ log.id }}</small></td>
+                        <td><small style="color: var(--dark-muted);">{{ log.timestamp }}</small></td>
+                        <td>
+                            <span class="badge badge-gray">{{ log.task_type }}</span>
+                        </td>
+                        <td><strong>{{ log.detected_value }}</strong></td>
+                        <td>
+                            {% if log.match_status in ['Dibenarkan', 'Dikenali', 'Selamat'] %}
+                            <span class="badge badge-green">{{ log.match_status }}</span>
+                            {% elif log.match_status == 'Senarai Hitam' %}
+                            <span class="badge badge-red">{{ log.match_status }}</span>
+                            {% elif log.match_status in ['Perhatian', 'Tidak Berdaftar'] %}
+                            <span class="badge badge-amber">{{ log.match_status }}</span>
+                            {% else %}
+                            <span class="badge badge-blue">{{ log.match_status }}</span>
+                            {% endif %}
+                        </td>
+                        <td><small>{{ log.matched_info }}</small></td>
+                        <td>{{ (log.confidence * 100)|round|int }}%</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" style="text-align: center; color: var(--dark-muted); padding: 2.5rem;">
+                            Tiada rekod pengesanan ditemui bagi penapis ini.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

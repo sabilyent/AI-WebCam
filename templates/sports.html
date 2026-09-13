@@ -1,0 +1,398 @@
+{% extends "base.html" %}
+
+{% block title %}Studio Analisis Sukan & Biomekanik Tinju{% endblock %}
+
+{% block content %}
+<div>
+    <div style="margin-bottom: 1.5rem;">
+        <h1 style="font-size: 1.6rem; font-weight: 700; color: var(--dark); margin-bottom: 0.35rem;">
+            <i class="fa-solid fa-mitten" style="color: #ef4444;"></i> Studio Analisis Sukan & Biomekanik Tinju
+        </h1>
+        <p style="color: var(--dark-muted); font-size: 0.92rem;">
+            Analisis pintar berkuasa AI & MediaPipe Pose untuk sukan <strong>Tinju (Boxing)</strong> dan <strong>Olahraga</strong>. Mengukur sudut tumbukan, kedudukan kaki (Orthodox/Southpaw), posisi "bunga" (High Guard), dan aturan rantaian kinetik kombinasi pukulan.
+        </p>
+    </div>
+
+    <!-- Sports Studio Grid -->
+    <div class="dashboard-grid">
+        <!-- Left: Sports Camera Monitor -->
+        <div class="camera-card">
+            <div class="card-header">
+                <h2><i class="fa-solid fa-video"></i> Suapan Kamera Latihan</h2>
+                <span class="badge badge-green" id="pose-badge">POSE ESTIMATION AKTIF</span>
+            </div>
+
+            <div class="video-container">
+                <img id="server-video-feed" class="video-feed" src="{{ url_for('video_feed') }}" alt="Suapan Kamera Pelayan">
+                <video id="browser-video" class="browser-video" autoplay playsinline muted></video>
+
+                <!-- Sports HUD -->
+                <div class="video-hud">
+                    <div class="hud-pill rec">
+                        <span class="rec-blink"></span>
+                        <span id="hud-mode-title">BOXING BIOMECHANICS</span>
+                    </div>
+                    <div class="hud-pill">
+                        <span id="sports-phase-tag">Tinju: Jab & Cross</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Athlete Controls Form -->
+            <div style="padding: 1.25rem; background: #ffffff;">
+                <div class="sports-form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+                    <div>
+                        <label class="form-label" for="athlete_name">Nama Atlet / Petinju:</label>
+                        <input type="text" id="athlete_name" class="form-control" value="Harimau Malaya (Petinju 1)">
+                    </div>
+                    <div>
+                        <label class="form-label" for="sport_type">Disiplin / Acara Sukan:</label>
+                        <select id="sport_type" class="form-control" onchange="handleSportTypeChange()">
+                            <optgroup label="🥊 Sukan Tinju (Boxing Biomechanics)">
+                                <option value="Tinju: Tumbukan Lurus Jab & Cross (1-2 Combo)" selected>🥊 Tinju: Tumbukan Lurus Jab & Cross (1-2)</option>
+                                <option value="Tinju: Pendirian Asas & Bunga (Stance & High Guard)">🥊 Tinju: Pendirian Asas & Bunga (Guard)</option>
+                                <option value="Tinju: Tumbukan Cangkuk (Hook & Uppercut)">🥊 Tinju: Tumbukan Cangkuk (Hook/Uppercut)</option>
+                                <option value="Tinju: Gerak Kaki & Kombinasi Bebas (Footwork & Combos)">🥊 Tinju: Gerak Kaki & Kombinasi Bebas</option>
+                            </optgroup>
+                            <optgroup label="🏃 Olahraga & Larian (Athletics)">
+                                <option value="Larian Pecut 100m">🏃 Larian Pecut 100m</option>
+                                <option value="Larian 200m / 400m">🏃 Larian 200m / 400m</option>
+                                <option value="Lompat Jauh (Fasa Lonjakan)">🏃 Lompat Jauh (Fasa Lonjakan)</option>
+                                <option value="Larian Berpagar">🏃 Larian Berpagar</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="sports-action-group" style="display: flex; flex-direction: column; gap: 0.65rem;">
+                    <button type="button" id="scan-sports-btn" class="btn btn-primary" onclick="triggerSportsScan()" style="width: 100%; background: #ef4444; border-color: #ef4444; font-size: 1rem; padding: 0.85rem 1.25rem; font-weight: 700; border-radius: var(--radius-md); box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3); min-height: 48px; display: flex; align-items: center; justify-content: center; gap: 0.5rem; letter-spacing: 0.01em;">
+                        <i class="fa-solid fa-bolt"></i> <span>Imbas &amp; Nilai Teknik Tinju</span>
+                    </button>
+                    <button type="button" id="toggle-cam-btn" class="btn btn-outline" onclick="toggleCameraSource()" style="width: 100%; font-size: 0.88rem; padding: 0.65rem 1rem; border-radius: var(--radius-md); min-height: 42px; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <i class="fa-solid fa-camera"></i> <span>Gunakan Kamera Pelayar (Webcam)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Sports Analysis Results Card -->
+        <div class="result-card">
+            <div class="card-header">
+                <h2><i class="fa-solid fa-clipboard-check"></i> Penilaian AI & Biomekanik</h2>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="badge badge-amber" id="sports-status-badge">SEDIA</span>
+                    <span class="badge badge-neutral" id="confidence-badge">0% CONF</span>
+                </div>
+            </div>
+
+            <div class="result-body" id="sports-result-content">
+                <!-- Idle State Placeholder -->
+                <div id="sports-placeholder" class="status-banner info">
+                    <div class="status-icon" style="background: #ffffff; color: var(--secondary);">
+                        <i class="fa-solid fa-mitten"></i>
+                    </div>
+                    <div class="status-text">
+                        <h3 id="placeholder-title">Sedia Menganalisis Teknik Tinju</h3>
+                        <p id="placeholder-desc">Berdiri di hadapan kamera dengan posisi sedia/menumbuk, kemudian klik <strong>Imbas & Nilai Teknik Tinju</strong>.</p>
+                    </div>
+                </div>
+
+                <!-- Live Biomechanical Angle Gauges (Dynamic for Boxing / Running) -->
+                <div class="sports-gauges-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 1.25rem;">
+                    <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.65rem 0.4rem; text-align: center;">
+                        <span id="gauge-1-label" style="font-size: 0.72rem; color: var(--dark-muted); display: block; font-weight: 600;">Ekstensi Siku</span>
+                        <span id="gauge-1-val" style="font-size: 1.15rem; font-weight: 700; color: #ef4444;">--°</span>
+                        <small id="gauge-1-hint" style="font-size: 0.65rem; color: var(--dark-muted); display: block;">Optimum 165°-175°</small>
+                    </div>
+
+                    <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.65rem 0.4rem; text-align: center;">
+                        <span id="gauge-2-label" style="font-size: 0.72rem; color: var(--dark-muted); display: block; font-weight: 600;">Siku Guard</span>
+                        <span id="gauge-2-val" style="font-size: 1.15rem; font-weight: 700; color: #0284c7;">--°</span>
+                        <small id="gauge-2-hint" style="font-size: 0.65rem; color: var(--dark-muted); display: block;">Optimum 45°-65°</small>
+                    </div>
+
+                    <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.65rem 0.4rem; text-align: center;">
+                        <span id="gauge-3-label" style="font-size: 0.72rem; color: var(--dark-muted); display: block; font-weight: 600;">Lebar Tapak Kaki</span>
+                        <span id="gauge-3-val" style="font-size: 1.15rem; font-weight: 700; color: #10b981;">--x</span>
+                        <small id="gauge-3-hint" style="font-size: 0.65rem; color: var(--dark-muted); display: block;">Optimum 1.2x-1.5x</small>
+                    </div>
+
+                    <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.65rem 0.4rem; text-align: center;">
+                        <span id="gauge-4-label" style="font-size: 0.72rem; color: var(--dark-muted); display: block; font-weight: 600;">Lenturan Lutut</span>
+                        <span id="gauge-4-val" style="font-size: 1.15rem; font-weight: 700; color: #f59e0b;">--°</span>
+                        <small id="gauge-4-hint" style="font-size: 0.65rem; color: var(--dark-muted); display: block;">Optimum 140°-155°</small>
+                    </div>
+                </div>
+
+                <!-- Structured Feedback Sections -->
+                <div id="ai-coaching-box" style="display: none; flex-direction: column; gap: 0.75rem;">
+                    
+                    <!-- Boxing Badges Header (Punch Type & Stance) -->
+                    <div id="boxing-badges-row" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <div style="background: #fee2e2; border: 1px solid #fca5a5; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.8rem; color: #991b1b; font-weight: 700; display: flex; align-items: center; gap: 0.4rem;">
+                            <i class="fa-solid fa-hand-back-fist"></i>
+                            <span id="punch-type-badge">Jab (1)</span>
+                        </div>
+                        <div style="background: #e0f2fe; border: 1px solid #bae6fd; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.8rem; color: #075985; font-weight: 700; display: flex; align-items: center; gap: 0.4rem;">
+                            <i class="fa-solid fa-shoe-prints"></i>
+                            <span id="stance-type-badge">Orthodox</span>
+                        </div>
+                    </div>
+
+                    <!-- Boxing Specific: Punch & Footwork Analysis -->
+                    <div id="boxing-punch-card" style="background: #fef2f2; border: 1px solid #fecaca; border-radius: var(--radius-sm); padding: 0.85rem;">
+                        <strong style="color: #991b1b; font-size: 0.88rem; display: flex; align-items: center; gap: 0.4rem;">
+                            <i class="fa-solid fa-mitten"></i> 1. Analisa Tumbukan & Penjajaran Buku Lima:
+                        </strong>
+                        <p id="punch-analysis-text" style="font-size: 0.85rem; color: #7f1d1d; margin-top: 0.35rem; line-height: 1.4;"></p>
+                    </div>
+
+                    <div id="boxing-footwork-card" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius-sm); padding: 0.85rem;">
+                        <strong style="color: #166534; font-size: 0.88rem; display: flex; align-items: center; gap: 0.4rem;">
+                            <i class="fa-solid fa-arrows-down-to-people"></i> 2. Kedudukan Kaki, Pendirian & Tolakan Tumit:
+                        </strong>
+                        <p id="footwork-analysis-text" style="font-size: 0.85rem; color: #14532d; margin-top: 0.35rem; line-height: 1.4;"></p>
+                    </div>
+
+                    <div id="boxing-guard-card" style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: var(--radius-sm); padding: 0.85rem;">
+                        <strong style="color: #1e40af; font-size: 0.88rem; display: flex; align-items: center; gap: 0.4rem;">
+                            <i class="fa-solid fa-shield-halved"></i> 3. Teknik "Bunga" & Kawalan Pertahanan (High Guard):
+                        </strong>
+                        <p id="guard-analysis-text" style="font-size: 0.85rem; color: #1e3a8a; margin-top: 0.35rem; line-height: 1.4;"></p>
+                    </div>
+
+                    <div id="boxing-combo-card" style="background: #faf5ff; border: 1px solid #e9d5ff; border-radius: var(--radius-sm); padding: 0.85rem;">
+                        <strong style="color: #6b21a8; font-size: 0.88rem; display: flex; align-items: center; gap: 0.4rem;">
+                            <i class="fa-solid fa-arrows-spin"></i> 4. Aturan Tumbukan & Disiplin Tangan Belakang:
+                        </strong>
+                        <p id="combo-discipline-text" style="font-size: 0.85rem; color: #581c87; margin-top: 0.35rem; line-height: 1.4;"></p>
+                    </div>
+
+                    <!-- General Speed Diagnosis / Athletic Assessment -->
+                    <div id="speed-diag-card" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--radius-sm); padding: 0.85rem;">
+                        <strong style="color: #334155; font-size: 0.88rem; display: flex; align-items: center; gap: 0.4rem;">
+                            <i class="fa-solid fa-gauge-high"></i> Diagnosis Kelajuan & Letusan Kuasa:
+                        </strong>
+                        <p id="speed-diagnosis-text" style="font-size: 0.85rem; color: #1e293b; margin-top: 0.35rem; line-height: 1.4;"></p>
+                    </div>
+
+                    <!-- Technical Weaknesses -->
+                    <div style="background: #fff1f2; border: 1px solid #fecdd3; border-radius: var(--radius-sm); padding: 0.85rem;">
+                        <strong style="color: #9f1239; font-size: 0.88rem; display: flex; align-items: center; gap: 0.4rem;">
+                            <i class="fa-solid fa-magnifying-glass-chart"></i> Kelemahan Teknik Yang Diteliti:
+                        </strong>
+                        <ul id="weaknesses-list" style="font-size: 0.85rem; color: #881337; margin-top: 0.35rem; padding-left: 1.25rem;"></ul>
+                    </div>
+
+                    <!-- Improvement Suggestions & Drills -->
+                    <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: var(--radius-sm); padding: 0.85rem;">
+                        <strong style="color: #075985; font-size: 0.88rem; display: flex; align-items: center; gap: 0.4rem;">
+                            <i class="fa-solid fa-list-check"></i> Cadangan Dril Latihan Jurulatih AI:
+                        </strong>
+                        <ul id="suggestions-list" style="font-size: 0.85rem; color: #0369a1; margin-top: 0.35rem; padding-left: 1.25rem;"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Past Sports Sessions Table -->
+    <div class="table-card" style="margin-top: 1.5rem;">
+        <div class="card-header">
+            <h2><i class="fa-solid fa-trophy"></i> Sejarah Sesi Analisis Atlet ({{ past_sessions|length }})</h2>
+        </div>
+        <div style="overflow-x: auto;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Tarikh & Masa</th>
+                        <th>Nama Atlet</th>
+                        <th>Acara Sukan</th>
+                        <th>Skor Teknik</th>
+                        <th>Sudut Utama</th>
+                        <th>Maklum Balas Jurulatih AI</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in past_sessions %}
+                    <tr>
+                        <td><small style="color: var(--dark-muted);">{{ s.timestamp }}</small></td>
+                        <td><strong>{{ s.athlete_name }}</strong></td>
+                        <td>
+                            {% if 'Tinju' in s.sport_type %}
+                            <span class="badge badge-red">{{ s.sport_type }}</span>
+                            {% else %}
+                            <span class="badge badge-gray">{{ s.sport_type }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge {% if s.posture_score >= 85 %}badge-green{% elif s.posture_score >= 70 %}badge-amber{% else %}badge-red{% endif %}">
+                                {{ s.posture_score }}%
+                            </span>
+                        </td>
+                        <td>{{ s.avg_stride_angle }}°</td>
+                        <td><small>{{ s.ai_feedback[:110] }}...</small></td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: var(--dark-muted); padding: 2rem;">
+                            Belum ada rekod sesi latihan sukan. Jalankan imbasan di atas untuk merekodkan analisis pertama!
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function isBoxingSelected() {
+    const sportType = document.getElementById("sport_type").value || "";
+    return sportType.toLowerCase().includes("tinju") || sportType.toLowerCase().includes("boxing");
+}
+
+function handleSportTypeChange() {
+    const isBoxing = isBoxingSelected();
+    const btn = document.getElementById("scan-sports-btn");
+    const hudTitle = document.getElementById("hud-mode-title");
+    const phaseTag = document.getElementById("sports-phase-tag");
+    const sportVal = document.getElementById("sport_type").value;
+
+    phaseTag.textContent = sportVal;
+
+    if (isBoxing) {
+        btn.innerHTML = `<i class="fa-solid fa-bolt"></i> Imbas & Nilai Teknik Tinju`;
+        btn.style.background = "#ef4444";
+        btn.style.borderColor = "#ef4444";
+        hudTitle.textContent = "BOXING BIOMECHANICS";
+
+        // Update gauges for boxing
+        document.getElementById("gauge-1-label").textContent = "Ekstensi Siku";
+        document.getElementById("gauge-1-hint").textContent = "Optimum 165°-175°";
+        document.getElementById("gauge-2-label").textContent = "Siku Guard";
+        document.getElementById("gauge-2-hint").textContent = "Optimum 45°-65°";
+        document.getElementById("gauge-3-label").textContent = "Lebar Tapak Kaki";
+        document.getElementById("gauge-3-hint").textContent = "Optimum 1.2x-1.5x";
+        document.getElementById("gauge-4-label").textContent = "Lenturan Lutut";
+        document.getElementById("gauge-4-hint").textContent = "Optimum 140°-155°";
+    } else {
+        btn.innerHTML = `<i class="fa-solid fa-person-running"></i> Imbas & Nilai Teknik Olahraga`;
+        btn.style.background = "var(--primary)";
+        btn.style.borderColor = "var(--primary)";
+        hudTitle.textContent = "ATHLETICS BIOMECHANICS";
+
+        // Update gauges for running
+        document.getElementById("gauge-1-label").textContent = "Sudut Lutut";
+        document.getElementById("gauge-1-hint").textContent = "Optimum 135°-150°";
+        document.getElementById("gauge-2-label").textContent = "Condong Torso";
+        document.getElementById("gauge-2-hint").textContent = "Optimum 15°-25°";
+        document.getElementById("gauge-3-label").textContent = "Hayunan Siku";
+        document.getElementById("gauge-3-hint").textContent = "Optimum ~90°";
+        document.getElementById("gauge-4-label").textContent = "Kestabilan Kaki";
+        document.getElementById("gauge-4-hint").textContent = "Pusat Graviti";
+    }
+}
+
+async function triggerSportsScan() {
+    const isBoxing = isBoxingSelected();
+    const btn = document.getElementById("scan-sports-btn");
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isBoxing ? 'Menganalisis Teknik Tinju...' : 'Menganalisis Biomekanik...'}`;
+
+    const athleteName = document.getElementById("athlete_name").value || (isBoxing ? "Petinju 1" : "Murid 1");
+    const sportType = document.getElementById("sport_type").value || "Tinju: Tumbukan Lurus Jab & Cross";
+
+    const payload = {
+        task: "SPORTS",
+        athlete_name: athleteName,
+        sport_type: sportType
+    };
+
+    if (useBrowserCam) {
+        const b64 = captureBrowserFrameBase64();
+        if (b64) payload.image_base64 = b64;
+    }
+
+    try {
+        const res = await fetch("/api/scan", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            // Hide placeholder
+            const placeholder = document.getElementById("placeholder-banner");
+            if (placeholder) placeholder.style.display = "none";
+
+            document.getElementById("ai-coaching-box").style.display = "flex";
+            document.getElementById("posture-score-pill").textContent = `SKOR: ${data.posture_score}/100`;
+
+            if (data.is_boxing) {
+                // Update Boxing Gauges
+                document.getElementById("gauge-1-val").textContent = `${data.elbow_angle}°`;
+                document.getElementById("gauge-2-val").textContent = `${data.guard_angle}°`;
+                document.getElementById("gauge-3-val").textContent = `${data.stance_ratio}x`;
+                document.getElementById("gauge-4-val").textContent = `${data.knee_angle}°`;
+
+                // Update Boxing Cards
+                document.getElementById("boxing-badges-row").style.display = "flex";
+                document.getElementById("punch-type-badge").textContent = data.punch_type || "Tumbukan Terkawal";
+                document.getElementById("stance-type-badge").textContent = data.stance_type || "Orthodox";
+
+                document.getElementById("boxing-punch-card").style.display = "block";
+                document.getElementById("punch-analysis-text").textContent = data.punch_analysis || data.speed_diagnosis;
+
+                document.getElementById("boxing-footwork-card").style.display = "block";
+                document.getElementById("footwork-analysis-text").textContent = data.footwork_analysis || "Kedudukan tapak kaki kukuh.";
+
+                document.getElementById("boxing-guard-card").style.display = "block";
+                document.getElementById("guard-analysis-text").textContent = data.guard_analysis || "Posisi bunga melindungi bahagian muka.";
+
+                document.getElementById("boxing-combo-card").style.display = "block";
+                document.getElementById("combo-discipline-text").textContent = data.combo_discipline || "Urutan pukulan mematuhi aturan rantaian kinetik.";
+            } else {
+                // Running layout
+                document.getElementById("gauge-1-val").textContent = `${data.knee_angle}°`;
+                document.getElementById("gauge-2-val").textContent = `${data.torso_angle}°`;
+                document.getElementById("gauge-3-val").textContent = `${data.elbow_angle}°`;
+                document.getElementById("gauge-4-val").textContent = `Stabil`;
+
+                document.getElementById("boxing-badges-row").style.display = "none";
+                document.getElementById("boxing-punch-card").style.display = "none";
+                document.getElementById("boxing-footwork-card").style.display = "none";
+                document.getElementById("boxing-guard-card").style.display = "none";
+                document.getElementById("boxing-combo-card").style.display = "none";
+            }
+
+            document.getElementById("speed-diagnosis-text").textContent = data.speed_diagnosis;
+
+            const weakList = document.getElementById("weaknesses-list");
+            weakList.innerHTML = (data.weaknesses || []).map(w => `<li>${w}</li>`).join("");
+
+            const suggList = document.getElementById("suggestions-list");
+            suggList.innerHTML = (data.suggestions || []).map(s => `<li>${s}</li>`).join("");
+
+            playChime(false);
+            showToast("Analisis teknik sukan berjaya dijana!", "success");
+        } else {
+            showToast(data.error || "Ralat memproses analisis sukan", "danger");
+        }
+    } catch (err) {
+        showToast("Ralat komunikasi: " + err.message, "danger");
+    } finally {
+        btn.disabled = false;
+        handleSportTypeChange();
+    }
+}
+
+// Initialize sport type UI on load
+document.addEventListener("DOMContentLoaded", () => {
+    handleSportTypeChange();
+});
+</script>
+{% endblock %}

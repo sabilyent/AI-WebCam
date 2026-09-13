@@ -36,12 +36,15 @@ Projek penyelidikan modular sumber terbuka (open-source) yang membolehkan penyel
   - Membaca dokumen, resit, tanda arah, atau teks fizikal di hadapan kamera.
 * **Pemerhatian & Ringkasan Am (General Scene Analysis):**
   - Menjana huraian aktiviti dalam bilik atau ruang kerja menggunakan arahan teks (*prompt*) tersuai kepada model AI.
-* **Analisis Pergerakan Sukan (Sports Motion Analysis):** *(Baru)*
-  - Merakam pergerakan pelajar semasa berlari, melompat, atau melakukan teknik sukan menggunakan **MediaPipe Pose Estimation**.
-  - AI menganalisis sudut sendi badan, corak langkah, kelajuan, dan frekuensi pergerakan.
-  - Menjana laporan peribadi mengapa pelajar itu laju atau perlahan.
-  - Mengenal pasti kelemahan teknik dan memberikan **cadangan latihan khusus** untuk penambahbaikan prestasi.
-  - Output: Laporan PDF atau Papan Pemuka Guru Sukan dalam format yang mudah difahami.
+* **Analisis Pergerakan Sukan & Biomekanik Tinju (Sports & Boxing Biomechanics):** *(Baru)*
+  - **Sukan Olahraga & Larian:** Menganalisis ayunan kaki, panjang langkah (stride), postur torso condong, dan pergerakan tangan menggunakan **MediaPipe Pose Estimation**.
+  - **Biomekanik Sukan Tinju (Boxing Analysis):**
+    - **Aturan Tumbukan (Punches):** Analisis ekstensi siku penuh, putaran buku lima (knuckle rotation), dan recoil/snap pantas untuk Jab, Cross, Hook, dan Uppercut.
+    - **Kedudukan Kaki & Pendirian (Footwork & Stance):** Pengecaman automatik *Orthodox* vs *Southpaw*, nisbah lebar tapak kaki vs bahu (1.2x - 1.5x), fleksi lutut, dan kedudukan tumit belakang.
+    - **Kawalan Guard & Bunga Pertahanan:** Pemantauan kedudukan penumbuk menutup dagu dan pipi (*High Guard*), serta siku menutupi rusuk (*rib protection*).
+    - **Disiplin Kombinasi & Rantaian Kinetik:** Mengesan turutan tumbukan yang betul (1-2 Jab-Cross, 1-2-3), putaran pinggul, dan perlindungan tangan bertahan ketika menumbuk.
+  - Menjana diagnosis kelajuan, skor postur, pengesanan kelemahan teknikal, dan cadangan dril latihan khusus peninju/atlet.
+  - Output: Papan Pemuka Studio Sukan interaktif dengan tolok sudut sendi secara langsung dan simpanan rekod sesi ke pangkalan data SQLite.
 
 
 ### 3. 📂 Pengurusan Set Data & Senarai Pantau (Dataset & Watchlist)
